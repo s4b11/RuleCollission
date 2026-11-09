@@ -1,0 +1,17 @@
+[project]
+name = "rulecollision-backend"
+version = "0.1.0"
+description = "RuleCollision backend: deterministic rule engine and case API"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+    "networkx>=3.3",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,85 @@
+# FICTIONAL rule pack. Not the policy of any real hospital, insurer or TPA.
+pack_id: hospital_discharge
+name: Hospital discharge with cashless insurance (fictional)
+description: >
+  Synthetic process for Sunrise General Hospital (fictional) and Asha Health
+  Insurance via MediLink TPA (fictional). It deliberately contains a known
+  billing/TPA deadlock that an approved interim-bill alternative can unlock.
+
+offices:
+  - { id: ward, name: Ward / Nursing Station }
+  - { id: doctor, name: Treating Doctor }
+  - { id: lab, name: Laboratory }
+  - { id: billing, name: Billing Department }
+  - { id: insurance_desk, name: Hospital Insurance Desk }
+  - { id: tpa, name: MediLink TPA (on behalf of insurer) }
+
+documents:
+  - { id: policy_card, name: Insurance policy e-card }
+  - { id: admission_note, name: Admission note }
+  - { id: room_rent_declaration, name: Room-rent declaration (retired form) }
+  - { id: preauth_approval, name: Cashless pre-authorisation approval }
+  - { id: lab_summary, name: Laboratory summary }
+  - { id: discharge_summary, name: Discharge summary }
+  - { id: interim_bill, name: Interim (provisional) bill }
+  - { id: final_bill, name: Final hospital bill }
+  - { id: final_insurer_approval, name: Final cashless approval }
+  - { id: billing_clearance, name: Billing clearance }
+  - { id: discharge_authorization, name: Discharge authorisation, aliases: [discharge_pass] }
+
+requirements:
+  - id: hd_admission
+    office: ward
+    produces: admission_note
+
+  - id: hd_preauth_v1
+    office: tpa
+    produces: preauth_approval
+    prerequisites: { all_of: [admission_note, policy_card, room_rent_declaration] }
+    effective_until: 2026-03-31
+
+  - id: hd_preauth_v2
+    office: tpa
+    produces: preauth_approval
+    prerequisites: { all_of: [admission_note, policy_card] }
+    effective_from: 2026-04-01
+
+  - id: hd_lab_summary
+    office: lab
+    produces: lab_summary
+    prerequisites: admission_note
+
+  - id: hd_discharge_summary
+    office: doctor
+    produces: discharge_summary
+    prerequisites: lab_summary
+
+  - id: hd_final_bill
+    office: billing
+    produces: final_bill
+    prerequisites: { all_of: [preauth_approval, final_insurer_approval] }
+
+  - id: hd_final_approval
+    office: tpa
+    produces: final_insurer_approval
+    prerequisites: { all_of: [final_bill, discharge_summary] }
+
+  - id: hd_billing_clearance
+    office: billing
+    produces: billing_clearance
+    prerequisites: final_bill
+
+  - id: hd_discharge
+    office: ward
+    produces: discharge_authorization
+    prerequisites: { all_of: [billing_clearance, discharge_summary] }
+
+alternatives:
+  - id: alt_interim_bill
+    office: billing
+    produces: interim_bill
+    prerequisites: preauth_approval
+    substitutes: final_bill
+    in_offices: [tpa]
+    approval_by: billing
+    description: Billing issues an interim bill that the TPA may accept in place of the final bill for final approval

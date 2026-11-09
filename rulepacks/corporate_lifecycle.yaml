@@ -1,0 +1,110 @@
+# FICTIONAL rule pack. Not the policy of any real company.
+pack_id: corporate_lifecycle
+name: Corporate onboarding and offboarding (fictional)
+description: >
+  Synthetic HR, IT, Finance, Admin, Legal and Security processes for Northwind
+  Labs (fictional), with known onboarding and offboarding deadlocks.
+
+offices:
+  - { id: hr, name: Human Resources }
+  - { id: it, name: IT Service Desk }
+  - { id: finance, name: Finance / Payroll }
+  - { id: admin, name: Admin & Facilities }
+  - { id: manager, name: Reporting Manager }
+  - { id: legal, name: Legal }
+  - { id: security, name: Background Verification (Security) }
+
+documents:
+  - { id: resignation_letter, name: Resignation letter }
+  - { id: resignation_acceptance, name: Resignation acceptance }
+  - { id: hr_exit_record, name: HR exit record }
+  - { id: provisional_exit_ticket, name: Provisional exit ticket }
+  - { id: it_asset_clearance, name: IT asset clearance }
+  - { id: access_card_return, name: Access card return receipt }
+  - { id: no_dues_certificate, name: No-dues certificate, aliases: [clearance_form] }
+  - { id: full_and_final_settlement, name: Full-and-final settlement }
+  - { id: relieving_letter, name: Relieving letter }
+  - { id: offer_acceptance, name: Signed offer acceptance }
+  - { id: signed_nda, name: NDA signed on the e-sign portal }
+  - { id: paper_nda, name: Wet-ink paper NDA }
+  - { id: employee_id, name: Employee ID }
+  - { id: laptop_issued, name: Laptop issue record }
+  - { id: bgv_report, name: Background verification report }
+  - { id: joining_letter, name: Joining letter }
+
+requirements:
+  # Offboarding
+  - id: co_resignation_ack
+    office: manager
+    produces: resignation_acceptance
+    prerequisites: resignation_letter
+
+  - id: co_it_clearance
+    office: it
+    produces: it_asset_clearance
+    prerequisites: hr_exit_record
+
+  - id: co_exit_record
+    office: hr
+    produces: hr_exit_record
+    prerequisites: { all_of: [resignation_acceptance, it_asset_clearance] }
+
+  - id: co_no_dues
+    office: admin
+    produces: no_dues_certificate
+    prerequisites: access_card_return
+
+  - id: co_fnf
+    office: finance
+    produces: full_and_final_settlement
+    prerequisites: { all_of: [hr_exit_record, clearance_form] }
+
+  - id: co_relieving
+    office: hr
+    produces: relieving_letter
+    prerequisites: full_and_final_settlement
+
+  # Onboarding
+  - id: co_nda
+    office: legal
+    produces: signed_nda
+    prerequisites: laptop_issued
+
+  - id: co_employee_id
+    office: hr
+    produces: employee_id
+    prerequisites: signed_nda
+
+  - id: co_laptop
+    office: it
+    produces: laptop_issued
+    prerequisites: employee_id
+
+  - id: co_bgv
+    office: security
+    produces: bgv_report
+    prerequisites: offer_acceptance
+
+  - id: co_joining_letter
+    office: hr
+    produces: joining_letter
+    prerequisites: bgv_report
+
+alternatives:
+  - id: alt_provisional_exit
+    office: hr
+    produces: provisional_exit_ticket
+    prerequisites: resignation_acceptance
+    substitutes: hr_exit_record
+    in_offices: [it]
+    approval_by: hr
+    description: HR issues a provisional exit ticket that IT may accept in place of the exit record
+
+  - id: alt_paper_nda
+    office: legal
+    produces: paper_nda
+    prerequisites: offer_acceptance
+    substitutes: signed_nda
+    in_offices: [hr]
+    approval_by: legal
+    description: Legal accepts a wet-ink paper NDA that HR may accept in place of the e-signed NDA
