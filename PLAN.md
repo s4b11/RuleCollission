@@ -14,7 +14,7 @@ See [details.md](./details.md) for the full concept.
 | Language | English only |
 | Budget | Free tiers only (OpenAI used only as paid fallback) |
 | LLM | Groq `openai/gpt-oss-120b` (extraction/tools), `openai/gpt-oss-20b` (readback/summaries); fallback OpenAI `gpt-5.4-mini` → `gpt-5.4` |
-| STT | Groq Whisper `whisper-large-v3-turbo` |
+| STT | Deepgram streaming STT (primary) + Cartesia streaming STT (alternate/fallback), selectable per session — Groq Whisper dropped 2026-11-09 |
 | TTS | Deepgram Aura (primary) + Cartesia (alternate/fallback), selectable per session |
 | Storage | Cloudflare R2 (S3-compatible) |
 | Timeline | 1-week sprint |
@@ -78,7 +78,7 @@ React (Vite, Tailwind, React Flow, LiveKit components)  — Cloudflare Pages
         │  REST + WebSocket                │ WebRTC
         ▼                                  ▼
 FastAPI backend  ◄──── tool calls ────  LiveKit Agent worker (Python)
-  │  auth (JWT roles)                    STT: Groq Whisper
+  │  auth (JWT roles)                    STT: Deepgram / Cartesia
   │  cases / evidence / reviews          LLM: Groq gpt-oss → OpenAI fallback
   │  rule engine (deterministic)         TTS: Deepgram Aura / Cartesia
   ├── Neon Postgres (metadata, versions, decisions, audit)
@@ -118,7 +118,7 @@ Uploads use presigned PUT URLs; downloads use short-lived presigned GET URLs. Po
 | Frontend | React + Vite + TypeScript, Tailwind CSS, React Flow, `@livekit/components-react` |
 | Backend | Python 3.12+, FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, WebSockets |
 | Rule engine | Pure Python + networkx |
-| Voice | LiveKit Cloud (free) + `livekit-agents` with Groq, Deepgram, Cartesia, OpenAI plugins |
+| Voice | LiveKit Cloud (free) + `livekit-agents` with Deepgram + Cartesia (STT and TTS), Groq + OpenAI (LLM) plugins |
 | DB | Neon Postgres (free); SQLite allowed for local tests |
 | Storage | Cloudflare R2 via `boto3` |
 | Reports | WeasyPrint or ReportLab |

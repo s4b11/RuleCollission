@@ -4,7 +4,7 @@ title: RuleCollision project
 description: Purpose, scope, domains, technology choices, repository layout and conventions for RuleCollision.
 tags: [project, scope, stack]
 status: stable
-generated: { by: copilot-sdk-agent/claude, at: "2026-11-08T17:39:00+05:30" }
+generated: { by: claude-code/claude, at: "2026-11-09T03:30:00+00:00" }
 sources:
   - id: concept
     resource: ../details.md
@@ -44,7 +44,7 @@ Applicant (patient/family or employee), desk staff, and approver (an office's au
 | Database | Neon Postgres (free tier) | Planned |
 | File storage | Cloudflare R2 (S3-compatible, via boto3) | Planned |
 | Voice | LiveKit Cloud + LiveKit Agents (Python) | Planned |
-| STT | Groq Whisper `whisper-large-v3-turbo` | Planned |
+| STT | Deepgram (primary) and Cartesia (alternate), selectable ([decision 0005](/decisions/0005-deepgram-cartesia-speech.md)) | Planned |
 | LLM | Groq `openai/gpt-oss-120b` / `openai/gpt-oss-20b`; fallback OpenAI GPT-5.4 mini / GPT-5.4 | Planned |
 | TTS | Deepgram Aura and Cartesia (both, selectable) | Planned |
 | Frontend | React + Vite + TypeScript, Tailwind, React Flow | Planned |
@@ -64,7 +64,7 @@ See [system architecture](/architecture/system.md).
 | `backend/tests/` | Golden tests for both rule packs | Implemented |
 | `rulepacks/` | `hospital_discharge.yaml`, `corporate_lifecycle.yaml` | Implemented |
 | `scripts/check_okf.py` | Knowledge-bundle validator | Implemented |
-| `backend/app/api/`, `backend/app/storage/`, `agent/`, `frontend/` | Empty placeholders | Not started |
+| `backend/app/api/`, `backend/app/storage/`, `agent/`, `frontend/` | Do not exist yet (planned in [PLAN.md](../PLAN.md) §8) | Not started |
 
 # Conventions
 

@@ -1,5 +1,10 @@
 # RuleCollision update log
 
+## 2026-11-09
+* **Decision**: [0005](/decisions/0005-deepgram-cartesia-speech.md) drops Groq Whisper; Deepgram and Cartesia provide both STT and TTS. [0004](/decisions/0004-provider-selection.md) deprecated. `PLAN.md` updated to match.
+* **Creation**: Proposed [engine limitation resolutions](/development/engine-limitations.md); recorded a newly found issue (equivalences not office-scoped) in [known issues](/development/known-issues.md).
+* **Update**: Corrected stale statements: the project is a Git repository, and the `api/`, `storage/`, `agent/`, `frontend/` placeholders do not exist yet.
+
 ## 2026-11-08
 * **Initialization**: Set up the OKF v0.2 knowledge bundle, [AGENTS.md](../AGENTS.md) and `scripts/check_okf.py`.
 * **Creation**: Implemented the deterministic [rule engine](/architecture/rule-engine.md) with 30 passing golden tests.

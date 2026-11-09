@@ -4,7 +4,7 @@ title: System architecture
 description: Planned components, pipeline, data model and Cloudflare R2 storage layout; only the rule engine is implemented.
 tags: [architecture, planned, storage, voice]
 status: draft
-generated: { by: copilot-sdk-agent/claude, at: "2026-11-08T17:39:00+05:30" }
+generated: { by: claude-code/claude, at: "2026-11-09T03:30:00+00:00" }
 sources:
   - id: plan
     resource: ../../PLAN.md
@@ -23,7 +23,7 @@ React (Vite, Tailwind, React Flow, LiveKit components)  — Cloudflare Pages
         │  REST + WebSocket                │ WebRTC
         ▼                                  ▼
 FastAPI backend  ◄──── tool calls ────  LiveKit Agent worker (Python)
-  │  auth (JWT roles)                    STT: Groq Whisper
+  │  auth (JWT roles)                    STT: Deepgram / Cartesia
   │  cases / evidence / reviews          LLM: Groq gpt-oss → OpenAI fallback
   │  rule engine (deterministic)         TTS: Deepgram Aura / Cartesia
   ├── Neon Postgres (metadata, versions, decisions, audit)
@@ -32,7 +32,7 @@ FastAPI backend  ◄──── tool calls ────  LiveKit Agent worker (
 
 # Pipeline
 
-1. Voice or text intake → STT.
+1. Voice or text intake → STT (Deepgram primary, Cartesia alternate; [decision 0005](/decisions/0005-deepgram-cartesia-speech.md)).
 2. LLM extraction proposes requirements through the `propose_requirement` tool.
 3. Readback and confirmation of names, dates, negations and either/both conditions.
 4. Requirement store (unverified until confirmed by the issuing office).
