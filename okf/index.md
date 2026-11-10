@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # RuleCollision knowledge bundle
 
-Project knowledge for RuleCollision, a voice and text agent that finds incompatible administrative requirements across offices and produces a confirmed route, a targeted clarification, or an evidence-backed unresolved report. Start with the current state, then follow links to what your task needs.
+Project knowledge for RuleCollision, a configurable voice and text assistant that finds incompatible administrative requirements across offices and produces a confirmed route, a targeted clarification, or an evidence-backed unresolved report. Start with the current state, then follow links to what your task needs.
 
 # Start here
 
@@ -14,7 +14,7 @@ Project knowledge for RuleCollision, a voice and text agent that finds incompati
 
 # Topics
 
-* [Architecture](architecture/index.md) - System design (planned) and the rule engine design (implemented)
-* [Features](features/index.md) - Route analysis behavior and the domain rule packs
+* [Architecture](architecture/index.md) - System architecture and the rule engine design
+* [Features](features/index.md) - Platform features, route analysis behavior and the domain rule packs
 * [Decisions](decisions/index.md) - Durable records of consequential choices
-* [Development](development/index.md) - Sprint plan, known issues and technical debt
+* [Development](development/index.md) - Build phases, known issues and proposed engine fixes

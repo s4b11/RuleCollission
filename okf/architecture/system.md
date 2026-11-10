@@ -1,72 +1,78 @@
 ---
 type: Architecture
 title: System architecture
-description: Planned components, pipeline, data model and Cloudflare R2 storage layout; only the rule engine is implemented.
-tags: [architecture, planned, storage, voice]
-status: draft
-generated: { by: claude-code/claude, at: "2026-11-09T03:30:00+00:00" }
+description: Components, request flows, data model and security boundaries of the platform as implemented.
+tags: [architecture, backend, agent, frontend]
+status: stable
+generated: { by: claude-code/claude, at: "2026-11-10T10:52:00+00:00" }
+verified:
+  - { by: "process:pytest", at: "2026-11-10T10:52:00+00:00" }
 sources:
   - id: plan
     resource: ../../PLAN.md
-    title: Finalized build plan
-  - id: concept
-    resource: ../../details.md
-    title: Project concept and MVP specification
+    title: Build plan v2
+  - id: main
+    resource: ../../backend/app/main.py
+    title: Backend entry point
+  - id: agent
+    resource: ../../agent/agent.py
+    title: LiveKit agent
 ---
 
-> **Status:** Intended design. Apart from the [rule engine](/architecture/rule-engine.md), none of the components below exist yet.[^plan]
+> Backend and web app are implemented and tested. The agent is written and its backend calls are tested, but it has not run against live LiveKit, speech or model services.[^plan]
 
 # Components
 
-```text
-React (Vite, Tailwind, React Flow, LiveKit components)  — Cloudflare Pages
-        │  REST + WebSocket                │ WebRTC
-        ▼                                  ▼
-FastAPI backend  ◄──── tool calls ────  LiveKit Agent worker (Python)
-  │  auth (JWT roles)                    STT: Deepgram / Cartesia
-  │  cases / evidence / reviews          LLM: Groq gpt-oss → OpenAI fallback
-  │  rule engine (deterministic)         TTS: Deepgram Aura / Cartesia
-  ├── Neon Postgres (metadata, versions, decisions, audit)
-  └── Cloudflare R2 (evidence, consented recordings, report PDFs)
-```
+| Part | Location | Role |
+| --- | --- | --- |
+| Backend | `backend/app/` | FastAPI app[^main] |
+| Rule engine | `backend/app/engine/` | [Deterministic analysis](/architecture/rule-engine.md) |
+| Agent | `agent/` | One generic LiveKit worker[^agent] ([0007](/decisions/0007-single-dynamic-agent.md)) |
+| Web app | `frontend/` | Patient assistant, staff dashboard, Agent Studio |
 
-# Pipeline
+# Backend layout
 
-1. Voice or text intake → STT (Deepgram primary, Cartesia alternate; [decision 0005](/decisions/0005-deepgram-cartesia-speech.md)).
-2. LLM extraction proposes requirements through the `propose_requirement` tool.
-3. Readback and confirmation of names, dates, negations and either/both conditions.
-4. Requirement store (unverified until confirmed by the issuing office).
-5. [Rule engine](/architecture/rule-engine.md) analysis → route, blocking groups, clarifications.
-6. Staff review: authenticated, case-scoped decisions.
-7. Recompute. Route states: suggested → confirmed → completed, or unresolved.
-
-Invariant: [the LLM proposes; the engine and staff decide](/decisions/0001-llm-proposes-engine-decides.md).
-
-# Storage (Cloudflare R2)
-
-Decided in [decision 0003](/decisions/0003-cloudflare-r2-storage.md).
-
-| Prefix | Contents |
+| Module | Contents |
 | --- | --- |
-| `evidence/{case_id}/` | Discharge summaries, pre-authorisation letters, TPA queries, bills, photos of written instructions |
-| `recordings/{case_id}/` | Session audio, only with consent |
-| `reports/{case_id}/` | Generated route-summary and unresolved-case PDFs |
+| `models.py` | All tables |
+| `api/auth.py` | Staff sign-in |
+| `api/public.py` | Patient page: agent info, start session, session state, case lookup, QR image |
+| `api/ops.py` | Staff dashboard: subjects, documents, cases, review inbox, transcripts |
+| `api/studio.py` | Administrators: agent profile, tools, MCP, locations, knowledge, rule packs, drafts |
+| `api/agent_internal.py` | Agent only: session config, phone sessions, tool calls, transcripts |
+| `services/cases.py` | Builds the engine input, stores the analysis, syncs review requests, records decisions |
+| `services/summary.py` | Readable case summary and dependency graph |
+| `services/agent_config.py` | Session instructions and tool list |
+| `services/rule_drafts.py`, `services/llm.py` | AI rule drafts |
+| `rag/` | Document ingest, embedding, search |
+| `tools/` | Built-in tools and the external web-tool caller |
+| `seed/demo.py` | Fictional hospital and company |
 
-Browser uploads use presigned PUT URLs; downloads use short-lived presigned GET URLs. Postgres stores only key, SHA-256, size, MIME type and verification status.
+# Main flows
 
-# Planned data model
+**Conversation.** The patient page asks the backend for a session and a LiveKit token. LiveKit dispatches the agent with the session id. The agent fetches its configuration, registers tools from their schemas, and forwards every tool call to the backend. The page polls the session state to show the case.
 
-`Case`, `Requirement` (versioned, append-only), `Evidence`, `Authority`, `Decision`, `Route`, `Clarification`, `AuditEvent`. Uncertainty is tracked as three separate fields: transcription, interpretation and authority verification.[^concept] The engine already defines in-memory Pydantic equivalents for several of these in `backend/app/engine/models.py`.
+**Case analysis.** `services/cases.analyze_case` loads the active rule pack, converts the case, the subject's documents, reported requirements and staff decisions into engine models, runs `analyze`, stores the result and creates one `ReviewRequest` per clarification.
 
-# Planned agent tools
+**Staff decision.** A staff member answers a review request. The backend records a `Decision` and reruns the engine. If the engine rejects the decision for lack of authority, the decision is removed and the request returns 403.
 
-`get_case_context`, `lookup_approved_rules`, `propose_requirement`, `confirm_requirement`, `analyze_routes`, `prepare_clarification`, `request_staff_review` (idempotency key), `build_route_summary`.
+**Rule drafting.** See [0013](/decisions/0013-ai-rule-drafts.md).
 
-# Security notes (planned)
+# Data model
 
-- JWT roles: `applicant`, `desk_staff`, `approver`, scoped by office.
-- Uploaded text is evidence, never instructions to the model.
-- Provider keys only in an uncommitted `.env`.
+`Organization`, `StaffUser`, `RulePackVersion`, `RuleDraft`, `AgentProfile`, `ToolDefinition`, `McpServer`, `Location`, `KnowledgeDocument`, `KnowledgeChunk`, `Subject`, `SubjectDocument`, `Case`, `Decision`, `ReviewRequest`, `CaseNote`, `AgentSession`, `TranscriptLine`, `ToolInvocation`. Reported requirements and equivalence claims are JSON on the case.
 
-[^plan]: Finalized build plan
-[^concept]: Project concept and MVP specification
+# Security boundaries
+
+- Staff APIs need a JWT; every query filters by the staff member's organisation. Studio APIs need `is_admin`.
+- Agent APIs need the shared `AGENT_API_KEY`.
+- Patient session state needs the session's secret token; case lookup needs code and identifier.
+- Tools cannot record decisions; external addresses must be public `https` ([0010](/decisions/0010-tools-read-propose-note.md)).
+
+# Deployment
+
+Backend on Modal (`backend/modal_app.py`), agent on LiveKit Cloud (`agent/Dockerfile`), web app on a static host. Settings: `.env.example`. See [0014](/decisions/0014-modal-hosting-and-simple-stack.md).
+
+[^plan]: Build plan v2
+[^main]: Backend entry point
+[^agent]: LiveKit agent

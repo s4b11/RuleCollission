@@ -18,6 +18,8 @@ sources:
 
 [Decision 0004](0004-provider-selection.md) proposed Groq Whisper `whisper-large-v3-turbo` for speech-to-text, which the user had not confirmed. On 2026-11-09 the user decided Groq Whisper is not needed: Deepgram and Cartesia cover both directions of speech.
 
+> The goal and timeline rows below were replaced on 2026-11-10 by [0006](0006-configurable-platform.md). The provider choices stand.
+
 # Decision
 
 | Topic | Choice |

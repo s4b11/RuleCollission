@@ -1,28 +1,26 @@
 ---
 type: Development Plan
-title: One-week sprint plan
-description: Day-by-day deliverables with progress status.
-tags: [plan, sprint]
+title: Build phases
+description: Phase-by-phase deliverables and progress; replaces the one-week sprint plan.
+tags: [plan, phases]
 status: stable
-generated: { by: copilot-sdk-agent/claude, at: "2026-11-08T17:39:00+05:30" }
+generated: { by: claude-code/claude, at: "2026-11-10T10:52:00+00:00" }
 sources:
   - id: plan
     resource: ../../PLAN.md
-    title: Finalized build plan
+    title: Build plan v2
 ---
 
-Plan source: [PLAN.md](../../PLAN.md) §9.[^plan] No issue tracker exists yet; this page tracks progress until one is set up.
+Plan source: [PLAN.md](../../PLAN.md) §4.[^plan] The one-week sprint was replaced by phases on 2026-11-10 ([0006](/decisions/0006-configurable-platform.md)).
 
-| Day | Deliverable | Progress |
+| # | Deliverable | Progress |
 | --- | --- | --- |
-| 1 | Rule-pack schema, engine, golden cases | **Done** (30 tests passing, 2026-11-08) |
-| 2 | Database models, case/evidence APIs, R2 presigned uploads | Not started |
-| 3 | Text chat intake: extraction, readback, confirmation | Not started |
-| 4 | Staff review UI, role-scoped approvals, route states | Not started |
-| 5 | LiveKit voice agent, interruption and correction handling | Not started |
-| 6 | Graph view, PDF reports to R2, corporate pack polish | Not started |
-| 7 | Three-case demo, deployment, README, video | Not started |
+| 0 | Plan v2 and decision records 0006–0015 | **Done** |
+| 1 | Backend core, demo data | **Done** (API tests passing). Engine fixes §5, §1, §6 moved to later |
+| 2 | Agent settings, tool gateway, web tools, MCP registry, knowledge search, AI rule drafts | **Done** (drafting tested with a stand-in model) |
+| 3 | Generic LiveKit agent | **Written**, not run live |
+| 4 | Web app and QR codes | **Done** (checked in a browser locally) |
+| 5 | Phone line | **Written** (phone sessions, 3-minute cap, keypad); needs a LiveKit number |
+| 6 | Deployment, PDF reports, engine fixes, automated browser tests | Deployment files and CI written; the rest not started |
 
-Fallback: if behind schedule, move voice to days 6–7 and keep text chat as the main interface.
-
-[^plan]: Finalized build plan
+[^plan]: Build plan v2
