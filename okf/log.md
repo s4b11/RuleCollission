@@ -1,6 +1,7 @@
 # RuleCollision update log
 
 ## 2026-11-10
+* **Update**: The deploy workflow now discovers the web and backend addresses itself ([0016](/decisions/0016-deploy-with-github-actions.md)).
 * **Decision**: [0016](/decisions/0016-deploy-with-github-actions.md) deploys backend, agent and web app from one manual GitHub Actions workflow.
 * **Decision**: Recorded [0006](/decisions/0006-configurable-platform.md) through [0015](/decisions/0015-plain-dashboard-design.md): configurable platform, single dynamic agent, WebRTC and polling, knowledge search, tool limits, phone and identification, transcripts only, AI rule drafts, Modal hosting, plain design.
 * **Creation**: Platform backend (`backend/app/`), single LiveKit agent (`agent/`) and web app (`frontend/`). See [system architecture](/architecture/system.md) and [platform features](/features/platform.md).

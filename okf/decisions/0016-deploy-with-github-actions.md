@@ -23,7 +23,7 @@ Deploy tools need secret keys on the machine that runs them. Keys must not be st
 - **Backend:** writes the Modal secret `rulecollision` from GitHub secrets, runs `modal deploy`, then checks `/health` when `BACKEND_URL` is set.
 - **Agent:** uses LiveKit's `livekit/deploy-action`. The first run creates the agent and commits `agent/livekit.toml`; later runs deploy a new version.
 - **Web app:** builds with `VITE_API_URL` and publishes to the Cloudflare Pages project `rulecollision`. `frontend/public/_redirects` sends every path to the app.
-- Addresses are repository variables `BACKEND_URL` and `WEB_APP_URL`.
+- The workflow discovers both addresses: it creates the Pages project and reads its address from the Cloudflare API, and reads the Modal address from the deploy output. The `BACKEND_URL` variable is only a fallback when the agent or web app is deployed alone.
 
 # Consequences
 

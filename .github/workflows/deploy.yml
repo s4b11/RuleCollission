@@ -12,10 +12,33 @@ on:
 concurrency: deploy
 
 jobs:
+  addresses:
+    name: Find the web app address
+    if: inputs.target != 'agent'
+    runs-on: ubuntu-latest
+    outputs:
+      web_url: ${{ steps.pages.outputs.web_url }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Create the Cloudflare Pages project if needed and read its address
+        id: pages
+        run: |
+          npx --yes wrangler@4 pages project create rulecollision --production-branch main || true
+          project="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/rulecollision"
+          address=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$project" \
+            | python3 -c "import json, sys; print(json.load(sys.stdin)['result']['subdomain'])")
+          echo "web_url=https://$address" >> "$GITHUB_OUTPUT"
+          echo "Web app address: https://$address" >> "$GITHUB_STEP_SUMMARY"
+
   backend:
     name: Backend to Modal
+    needs: addresses
     if: inputs.target == 'all' || inputs.target == 'backend'
     runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
     env:
       MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
       MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
@@ -41,8 +64,8 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          WEB_APP_URL: ${{ vars.WEB_APP_URL }}
-          CORS_ORIGINS: ${{ vars.WEB_APP_URL }}
+          WEB_APP_URL: ${{ needs.addresses.outputs.web_url }}
+          CORS_ORIGINS: ${{ needs.addresses.outputs.web_url }}
           SEED_DEMO: "1"
         run: |
           names="DATABASE_URL JWT_SECRET AGENT_API_KEY DEMO_PASSWORD LIVEKIT_URL LIVEKIT_API_KEY LIVEKIT_API_SECRET
@@ -55,17 +78,23 @@ jobs:
           modal secret create rulecollision "${settings[@]}" --force
 
       - name: Deploy
+        id: deploy
         working-directory: backend
-        run: modal deploy modal_app.py
+        run: |
+          set -o pipefail
+          modal deploy modal_app.py 2>&1 | tee deploy.log
+          url=$(grep -o 'https://[A-Za-z0-9.-]*\.modal\.run' deploy.log | head -1)
+          if [ -z "$url" ]; then echo "Could not read the backend address from the deploy output." && exit 1; fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Backend address: $url" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Check the backend answers
-        if: vars.BACKEND_URL != ''
-        run: curl --fail --retry 6 --retry-delay 10 --retry-all-errors "${{ vars.BACKEND_URL }}/health"
+        run: curl --fail --retry 8 --retry-delay 10 --retry-all-errors "${{ steps.deploy.outputs.url }}/health"
 
   agent:
     name: Agent to LiveKit Cloud
     needs: backend
-    if: always() && needs.backend.result != 'failure' && (inputs.target == 'all' || inputs.target == 'agent')
+    if: always() && needs.backend.result != 'failure' && needs.backend.result != 'cancelled' && (inputs.target == 'all' || inputs.target == 'agent')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -78,15 +107,15 @@ jobs:
 
       - name: Collect the agent's settings
         env:
-          BACKEND_URL: ${{ vars.BACKEND_URL }}
+          BACKEND_URL: ${{ needs.backend.outputs.url || vars.BACKEND_URL }}
           AGENT_API_KEY: ${{ secrets.AGENT_API_KEY }}
           DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY }}
           CARTESIA_API_KEY: ${{ secrets.CARTESIA_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          if [ -z "$BACKEND_URL" ]; then
-            echo "Set the repository variable BACKEND_URL to the backend address first." && exit 1
+          if [[ ! "$BACKEND_URL" =~ ^https://[^/]+\.[^/]+ ]]; then
+            echo "The backend address is unknown. Deploy 'all', or set the BACKEND_URL variable to the full address." && exit 1
           fi
           list=""
           for name in BACKEND_URL AGENT_API_KEY DEEPGRAM_API_KEY CARTESIA_API_KEY GROQ_API_KEY OPENAI_API_KEY; do
@@ -130,7 +159,7 @@ jobs:
   web:
     name: Web app to Cloudflare Pages
     needs: backend
-    if: always() && needs.backend.result != 'failure' && (inputs.target == 'all' || inputs.target == 'web')
+    if: always() && needs.backend.result != 'failure' && needs.backend.result != 'cancelled' && (inputs.target == 'all' || inputs.target == 'web')
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -143,15 +172,13 @@ jobs:
       - name: Build
         working-directory: frontend
         env:
-          VITE_API_URL: ${{ vars.BACKEND_URL }}
+          VITE_API_URL: ${{ needs.backend.outputs.url || vars.BACKEND_URL }}
         run: |
-          if [ -z "$VITE_API_URL" ]; then
-            echo "Set the repository variable BACKEND_URL to the backend address first." && exit 1
+          if [[ ! "$VITE_API_URL" =~ ^https://[^/]+\.[^/]+ ]]; then
+            echo "The backend address is unknown. Deploy 'all', or set the BACKEND_URL variable to the full address." && exit 1
           fi
           npm ci
           npm run build
       - name: Deploy
         working-directory: frontend
-        run: |
-          npx wrangler@4 pages project create rulecollision --production-branch main || true
-          npx wrangler@4 pages deploy dist --project-name rulecollision --branch main
+        run: npx --yes wrangler@4 pages deploy dist --project-name rulecollision --branch main

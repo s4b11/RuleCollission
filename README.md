@@ -75,15 +75,10 @@ Deployment runs in GitHub Actions, so no key is ever stored in the repository. T
 
    Optional secrets: `CARTESIA_API_KEY`, `OPENAI_API_KEY`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
 
-   | Variables | Value |
-   | --- | --- |
-   | `BACKEND_URL` | `https://<modal-workspace>--rulecollision-backend-api.modal.run` |
-   | `WEB_APP_URL` | `https://rulecollision.pages.dev` (Cloudflare shows the exact address after the first deploy) |
+   No addresses need to be entered: the workflow reads the Cloudflare Pages address and the Modal address itself and shows both in the run summary. Set the variable `BACKEND_URL` only if you later deploy the agent or web app on its own.
 
 3. Open **Actions → Deploy → Run workflow**. Choose `all`, or one part.
 4. The first agent run creates the agent and commits `agent/livekit.toml` (ids only, no secrets).
 5. **Phone:** in LiveKit Cloud, get a phone number and add a dispatch rule that sends calls to the agent named `rulecollision`. Enter the number in Agent Studio → QR codes and phone. Calls end after 3 minutes.
-
-If an address turns out different from the variable you set, correct the variable and run the workflow again.
 
 All data in this repository is fictional. Never commit real patient, employee or institution data, or any keys.
