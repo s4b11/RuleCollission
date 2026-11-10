@@ -1,3 +1,4 @@
+import { FileText, Search, Sparkles, Trash2, Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Empty, ErrorText, Field, Input, PageTitle, Table } from '../components/ui'
@@ -43,45 +44,45 @@ export default function Knowledge() {
     <>
       <PageTitle title="Knowledge" subtitle="Documents the agent can search and quote. They explain; they never decide a case." />
       <ErrorText>{error}</ErrorText>
-      <div className="mt-4 grid grid-cols-3 gap-6">
-        <div className="col-span-2 space-y-6">
-          <Card title="Documents">
-            {documents.data?.length === 0 && <Empty>No documents uploaded.</Empty>}
+      <div className="mt-4 grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <Card title="Documents" icon={FileText} flush>
+            {documents.data?.length === 0 && <Empty icon={FileText}>No documents uploaded.</Empty>}
             <Table head={['Title', 'Passages', 'Added', '']}>
               {(documents.data ?? []).map((d) => (
                 <tr key={d.id}>
-                  <td><span className="font-medium">{d.title}</span><br /><span className="text-xs text-muted">{d.filename}</span></td>
+                  <td><span className="font-medium text-ink">{d.title}</span><br /><span className="text-xs text-muted">{d.filename}</span></td>
                   <td>{d.chunks}</td>
                   <td className="text-muted">{shortDate(d.created_at)}</td>
                   <td className="space-x-2 text-right whitespace-nowrap">
-                    <Button variant="plain" disabled={busy === d.id} onClick={() => draftRules(d.id)}>
+                    <Button variant="plain" size="sm" icon={Sparkles} disabled={busy === d.id} onClick={() => draftRules(d.id)}>
                       {busy === d.id ? 'Reading…' : 'Draft rules from this'}
                     </Button>
-                    <Button variant="danger" onClick={() => api(`/studio/knowledge/${d.id}`, { method: 'DELETE' }).then(documents.reload)}>Delete</Button>
+                    <Button variant="ghost" size="sm" icon={Trash2} aria-label="Delete document" onClick={() => api(`/studio/knowledge/${d.id}`, { method: 'DELETE' }).then(documents.reload)} />
                   </td>
                 </tr>
               ))}
             </Table>
           </Card>
-          <Card title="Try a search">
+          <Card title="Try a search" icon={Search}>
             <div className="flex gap-2">
               <Input placeholder="Ask something the documents should answer" value={query} onChange={(e) => setQuery(e.target.value)} />
-              <Button variant="plain" disabled={!query} onClick={() => api('/studio/knowledge/search', { body: { query } }).then(setPassages)}>Search</Button>
+              <Button variant="plain" icon={Search} disabled={!query} onClick={() => api('/studio/knowledge/search', { body: { query } }).then(setPassages)}>Search</Button>
             </div>
             {passages?.length === 0 && <Empty>No matching passage.</Empty>}
             {passages?.map((p, index) => (
-              <div key={index} className="mt-3 rounded-md border border-line p-3">
+              <div key={index} className="mt-3 rounded-lg border border-line bg-slate-50/60 p-3.5">
                 <p className="mb-1 text-xs text-muted">{p.document} · page {p.page} · match {p.score}</p>
                 <p>{p.text}</p>
               </div>
             ))}
           </Card>
         </div>
-        <Card title="Upload a document">
+        <Card title="Upload a document" icon={Upload}>
           <div className="space-y-3">
             <Field label="Title"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
             <Field label="File" hint="PDF, text or Markdown."><input ref={file} type="file" accept=".pdf,.txt,.md" className="text-sm" /></Field>
-            <Button onClick={upload}>Upload</Button>
+            <Button icon={Upload} onClick={upload}>Upload</Button>
           </div>
         </Card>
       </div>

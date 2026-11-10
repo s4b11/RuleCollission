@@ -2,16 +2,16 @@ type Node = { id: string; name: string; office: string; row: number; state: stri
 type Edge = { from: string; to: string }
 export type Graph = { nodes: Node[]; edges: Edge[] }
 
-const WIDTH = 190
-const HEIGHT = 48
+const WIDTH = 196
+const HEIGHT = 52
 const GAP_X = 36
 const GAP_Y = 34
 
 const COLOURS: Record<string, { fill: string; stroke: string }> = {
-  held: { fill: '#ecfdf5', stroke: '#059669' },
-  route: { fill: '#e8f0f6', stroke: '#1f5f8b' },
-  blocked: { fill: '#fef2f2', stroke: '#dc2626' },
-  pending: { fill: '#ffffff', stroke: '#cbd5e1' },
+  held: { fill: '#ecfdf5', stroke: '#34d399' },
+  route: { fill: '#eef3fd', stroke: '#2f5fd0' },
+  blocked: { fill: '#fef2f2', stroke: '#f87171' },
+  pending: { fill: '#ffffff', stroke: '#d0d5dd' },
 }
 
 const LEGEND = [
@@ -78,10 +78,10 @@ export default function CaseGraph({ graph }: { graph: Graph }) {
             const colour = COLOURS[node.state]
             return (
               <g key={node.id}>
-                <rect x={x} y={y} width={WIDTH} height={HEIGHT} rx={6} fill={colour.fill} stroke={colour.stroke}
-                  strokeWidth={node.goal ? 2.5 : 1.2} />
-                <text x={x + 10} y={y + 20} fontSize="12" fontWeight="600" fill="#1c2430">{shorten(node.name, 28)}</text>
-                <text x={x + 10} y={y + 37} fontSize="11" fill="#667085">
+                <rect x={x} y={y} width={WIDTH} height={HEIGHT} rx={10} fill={colour.fill} stroke={colour.stroke}
+                  strokeWidth={node.goal ? 2.5 : 1.3} />
+                <text x={x + 12} y={y + 22} fontSize="12.5" fontWeight="600" fill="#101828">{shorten(node.name, 27)}</text>
+                <text x={x + 12} y={y + 39} fontSize="11" fill="#667085">
                   {node.goal ? 'Goal · ' : ''}{shorten(node.office, node.goal ? 20 : 28)}
                 </text>
               </g>
@@ -89,15 +89,15 @@ export default function CaseGraph({ graph }: { graph: Graph }) {
           })}
         </svg>
       </div>
-      <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted">
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
         {LEGEND.map(([key, label]) => (
-          <span key={key} className="flex items-center gap-1.5">
-            <span className="inline-block h-3 w-3 rounded-sm border"
+          <span key={key} className="flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1">
+            <span className="inline-block h-2.5 w-2.5 rounded-full border"
               style={{ background: COLOURS[key].fill, borderColor: COLOURS[key].stroke }} />
             {label}
           </span>
         ))}
-        <span>An arrow means "is needed before".</span>
+        <span className="ml-1">An arrow means "is needed before".</span>
       </div>
     </div>
   )

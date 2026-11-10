@@ -1,3 +1,4 @@
+import { Check, FileCode2, History, ListChecks, MessageSquareText, Pencil, Send, Shuffle, X } from 'lucide-react'
 import { useState } from 'react'
 import { Badge, Button, Card, Empty, ErrorText, Input, PageTitle, StatusBadge, Table, TextArea } from '../components/ui'
 import { api, useLoad } from '../lib/api'
@@ -21,8 +22,8 @@ function Draft({ draft, onDone }: { draft: any; onDone: () => void }) {
   }
 
   return (
-    <div className="rounded-lg border border-line bg-white p-4">
-      <div className="mb-3 flex items-center gap-2 text-xs text-muted">
+    <div className="rounded-xl border border-line bg-white p-5 shadow-card">
+      <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <Badge tone="blue">{draft.source === 'chat' ? 'From rule chat' : 'From document'}</Badge>
         <span>{draft.source_ref}</span>
         <span className="ml-auto">{shortDate(draft.created_at)}</span>
@@ -43,10 +44,10 @@ function Draft({ draft, onDone }: { draft: any; onDone: () => void }) {
       {draft.status === 'pending' && (
         <div className="mt-3 space-y-2">
           {editing && <TextArea rows={10} className="font-mono text-xs" value={text} onChange={(e) => setText(e.target.value)} />}
-          <div className="flex gap-2">
-            <Button onClick={() => review('approve')}>Approve and add to the rules</Button>
-            <Button variant="plain" onClick={() => setEditing(!editing)}>{editing ? 'Hide editor' : 'Edit first'}</Button>
-            <Button variant="danger" onClick={() => review('reject')}>Reject</Button>
+          <div className="flex flex-wrap gap-2">
+            <Button icon={Check} onClick={() => review('approve')}>Approve and add to the rules</Button>
+            <Button variant="plain" icon={Pencil} onClick={() => setEditing(!editing)}>{editing ? 'Hide editor' : 'Edit first'}</Button>
+            <Button variant="danger" icon={X} onClick={() => review('reject')}>Reject</Button>
           </div>
           <ErrorText>{error}</ErrorText>
         </div>
@@ -74,17 +75,17 @@ function RuleChat({ packId, onDraft }: { packId: string; onDraft: () => void }) 
   }
 
   return (
-    <Card title="Describe a rule in your own words">
+    <Card title="Describe a rule in your own words" icon={MessageSquareText}>
       <p className="mb-3 text-xs text-muted">The assistant turns your description into a draft. Nothing changes until you approve it.</p>
       <div className="mb-3 max-h-72 space-y-2 overflow-auto">
         {messages.map((m, index) => (
-          <p key={index} className={`rounded-md px-3 py-2 ${m.role === 'user' ? 'bg-brand-soft' : 'bg-slate-50'}`}>{m.content}</p>
+          <p key={index} className={`max-w-[90%] rounded-2xl px-3.5 py-2 text-sm ${m.role === 'user' ? 'ml-auto rounded-tr-sm bg-brand text-white' : 'rounded-tl-sm bg-slate-100 text-ink'}`}>{m.content}</p>
         ))}
       </div>
       <div className="flex gap-2">
         <Input placeholder="For example: Pharmacy gives clearance only after the final bill"
           value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && text && send()} />
-        <Button disabled={!text} onClick={send}>Send</Button>
+        <Button icon={Send} disabled={!text} onClick={send} aria-label="Send" />
       </div>
       <div className="mt-2"><ErrorText>{error}</ErrorText></div>
     </Card>
@@ -120,16 +121,16 @@ export default function Rules() {
   return (
     <>
       <PageTitle title="Rules" subtitle={`${data.name} · version ${pack.data.versions[0].version}`}
-        action={<Button variant="plain" onClick={() => setYamlText(yamlText === null ? pack.data.yaml_text : null)}>{yamlText === null ? 'Edit as a file' : 'Close editor'}</Button>} />
+        action={<Button variant="plain" icon={FileCode2} onClick={() => setYamlText(yamlText === null ? pack.data.yaml_text : null)}>{yamlText === null ? 'Edit as a file' : 'Close editor'}</Button>} />
       {yamlText !== null && (
-        <Card title="Rule pack file (YAML)" className="mb-6">
+        <Card title="Rule pack file (YAML)" icon={FileCode2} className="mb-6">
           <TextArea rows={18} className="font-mono text-xs" value={yamlText} onChange={(e) => setYamlText(e.target.value)} />
           <div className="mt-3 flex items-center gap-3"><Button onClick={saveYaml}>Check and save as a new version</Button></div>
           <div className="mt-2 whitespace-pre-wrap"><ErrorText>{error}</ErrorText></div>
         </Card>
       )}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 space-y-6">
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
           <div>
             <h2 className="mb-3 text-sm font-semibold">Drafts waiting for your approval</h2>
             <div className="space-y-3">
@@ -137,18 +138,18 @@ export default function Rules() {
               {pending.length === 0 && <Card><Empty>No drafts. Describe a rule in the chat, or draft rules from a document on the Knowledge page.</Empty></Card>}
             </div>
           </div>
-          <Card title="Approved rules">
+          <Card title="Approved rules" icon={ListChecks} flush>
             <Table head={['Office', 'Issues', 'Only after']}>
               {data.requirements.map((r: any) => (
                 <tr key={r.id}>
                   <td>{officeName(r.office)}</td>
-                  <td className="font-medium">{documentName(r.produces)}</td>
+                  <td className="font-medium text-ink">{documentName(r.produces)}</td>
                   <td className="text-muted">{describeNeeds(r.prerequisites, documentName)}</td>
                 </tr>
               ))}
             </Table>
           </Card>
-          <Card title="Approved alternatives">
+          <Card title="Approved alternatives" icon={Shuffle}>
             {data.alternatives.length === 0 && <Empty>None.</Empty>}
             {data.alternatives.map((a: any) => (
               <p key={a.id} className="mb-2">
@@ -159,7 +160,7 @@ export default function Rules() {
         </div>
         <div className="space-y-6">
           <RuleChat packId={packId} onDraft={drafts.reload} />
-          <Card title="Version history">
+          <Card title="Version history" icon={History}>
             {pack.data.versions.map((v: any) => (
               <p key={v.version} className="mb-1.5">
                 Version {v.version} {v.active && <Badge tone="green">in use</Badge>}

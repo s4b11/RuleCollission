@@ -1,10 +1,12 @@
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
+import { FileText, IdCard, Mic, Phone, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { Button, ErrorText } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import CaseView from './CaseView'
 import Conversation from './Conversation'
+import Shell from './Shell'
 
 type Session = { session_id: string; session_token: string; livekit_url: string; livekit_token: string }
 
@@ -25,34 +27,54 @@ export default function Assistant() {
     }
   }
 
-  if (info.error) return <div className="p-6"><ErrorText>{info.error}</ErrorText></div>
+  if (info.error) return <Shell><ErrorText>{info.error}</ErrorText></Shell>
   if (!info.data) return null
 
-  return (
-    <div className="mx-auto max-w-3xl p-6">
-      <p className="text-xs text-muted">{info.data.organization}{info.data.location && ` · ${info.data.location}`}</p>
-      <h1 className="mt-1 text-xl font-semibold">{info.data.name}</h1>
+  const points = [
+    [IdCard, `Keep your ${info.data.identifier_label} ready`, 'The assistant asks for it before discussing your case.'],
+    [FileText, 'Talk or type', 'A written record of the conversation is kept. Audio is never recorded.'],
+    [ShieldCheck, 'Staff decide', 'The assistant explains and asks the right office. It cannot approve anything.'],
+  ] as const
 
+  return (
+    <Shell context={[info.data.organization, info.data.location].filter(Boolean).join(' · ')}>
       {!session && (
-        <div className="mt-5 rounded-lg border border-line bg-white p-6">
-          <p>Stuck between two desks that each want the other's paper first? Tell the assistant what you were told. It will explain what is blocking you and who can fix it.</p>
-          <ul className="mt-3 list-disc space-y-1 pl-5 text-muted">
-            <li>Keep your {info.data.identifier_label} ready.</li>
-            <li>You can talk or type. A written record of the conversation is kept; audio is not recorded.</li>
-            <li>The assistant cannot approve anything. Only staff can.</li>
-          </ul>
-          <div className="mt-5 flex flex-wrap items-center gap-4">
-            <Button onClick={start} disabled={!info.data.voice_ready}>Start talking</Button>
-            <Link to="/case" className="text-brand hover:underline">I already have a case code</Link>
+        <>
+          <h1 className="text-3xl leading-tight font-semibold tracking-tight">{info.data.name}</h1>
+          <p className="mt-3 max-w-xl text-base text-muted">
+            Stuck between two desks that each want the other's paper first? Tell the assistant what you were told.
+            It will explain what is blocking you and who can fix it.
+          </p>
+
+          <div className="mt-8 rounded-xl border border-line bg-white p-6 shadow-card">
+            <ul className="space-y-5">
+              {points.map(([Icon, title, text]) => (
+                <li key={title} className="flex gap-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><Icon size={19} /></span>
+                  <span>
+                    <span className="block font-medium text-ink">{title}</span>
+                    <span className="text-sm text-muted">{text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button size="lg" icon={Mic} onClick={start} disabled={!info.data.voice_ready} className="w-full sm:w-auto">Start talking</Button>
+              <Link to="/case" className="text-center text-sm font-medium text-brand hover:underline">I already have a case code</Link>
+            </div>
+            {!info.data.voice_ready && <p className="mt-4 text-xs text-muted">The voice service is not connected on this server yet.</p>}
+            {info.data.phone_number && (
+              <p className="mt-4 flex items-center gap-2 text-sm text-muted">
+                <Phone size={15} /> Prefer to call? Dial <b>{info.data.phone_number}</b> (calls last up to 3 minutes).
+              </p>
+            )}
+            {error && <div className="mt-4"><ErrorText>{error}</ErrorText></div>}
           </div>
-          {!info.data.voice_ready && <p className="mt-3 text-xs text-muted">The voice service is not connected on this server yet.</p>}
-          {info.data.phone_number && <p className="mt-3 text-xs text-muted">Prefer to call? Dial {info.data.phone_number} (calls last up to 3 minutes).</p>}
-          <div className="mt-3"><ErrorText>{error}</ErrorText></div>
-        </div>
+        </>
       )}
 
       {session && (
-        <div className="mt-5 space-y-4">
+        <div className="space-y-4">
           <LiveKitRoom serverUrl={session.livekit_url} token={session.livekit_token} connect audio onDisconnected={() => setSession(null)}>
             <RoomAudioRenderer />
             <Conversation onLeave={() => setSession(null)} />
@@ -60,6 +82,6 @@ export default function Assistant() {
           {state.data?.case && <CaseView view={state.data.case} />}
         </div>
       )}
-    </div>
+    </Shell>
   )
 }
