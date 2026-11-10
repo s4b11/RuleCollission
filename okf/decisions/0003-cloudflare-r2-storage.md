@@ -17,6 +17,8 @@ Cases need files that don't belong in a database: uploaded evidence (discharge s
 
 Use Cloudflare R2 through its S3-compatible API (`boto3`). Prefixes: `evidence/{case_id}/`, `recordings/{case_id}/`, `reports/{case_id}/`. The browser uploads with presigned PUT URLs and downloads with short-lived presigned GET URLs. Postgres stores key, SHA-256, size, MIME type and verification status.
 
+> Amended on 2026-11-10: uploads pass through the backend ([0014](0014-modal-hosting-and-simple-stack.md)) and recordings are not kept ([0012](0012-transcripts-only.md)).
+
 # Consequences
 
 - Free tier (10 GB) is enough for the portfolio; R2 charges no egress fees.

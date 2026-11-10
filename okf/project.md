@@ -4,7 +4,7 @@ title: RuleCollision project
 description: Purpose, scope, domains, technology choices, repository layout and conventions for RuleCollision.
 tags: [project, scope, stack]
 status: stable
-generated: { by: copilot-sdk-agent/claude, at: "2026-11-08T17:39:00+05:30" }
+generated: { by: claude-code/claude, at: "2026-11-10T10:52:00+00:00" }
 sources:
   - id: concept
     resource: ../details.md
@@ -18,53 +18,56 @@ sources:
 
 RuleCollision helps when instructions from different offices cannot all be followed in the stated order, for example two desks that each require the other's document first. It captures requirements by voice or text, checks them deterministically, and produces one of three outcomes: a confirmed route, a precise clarification request to the right office, or an explicit unresolved case with evidence.[^concept] It cannot grant exceptions; only authenticated, authorised staff can.
 
-# Scope (as decided on 2026-11-08)
+# Scope (as decided on 2026-11-10)
 
 | Topic | Decision |
 | --- | --- |
-| Goal | Portfolio project built as a complete, general app driven by rule packs |
-| Primary domain | Hospital discharge with cashless insurance (fictional, synthetic data) |
-| Second domain | Corporate onboarding/offboarding (fictional) |
+| Product shape | Multi-organisation platform any domain can configure ([0006](/decisions/0006-configurable-platform.md)) |
+| Showcase | Fictional hospital: discharge with cashless insurance |
+| Second organisation | Fictional company: onboarding and offboarding |
+| Channels | Web app by QR code (voice and text) and a phone line ([0011](/decisions/0011-phone-and-identification.md)) |
 | Language | English only |
-| Budget | Free tiers only; OpenAI is a paid fallback |
-| Timeline | One-week sprint |
+| Budget | Free tiers where possible; OpenAI is a paid fallback |
+| Timeline | Phased ([build phases](/development/sprint-plan.md)) |
 
 Source: [PLAN.md](../PLAN.md) §1.[^plan]
 
 # Users
 
-Applicant (patient/family or employee), desk staff, and approver (an office's authorised decision-maker). Roles are planned, not yet implemented outside the engine's decision-validation logic.
+Applicant (patient/family or employee), desk staff, approver (an office's authorised decision-maker) and administrator (configures the agent in Agent Studio). Staff roles and offices are stored per organisation and enforced by the backend and the engine.
 
 # Technology stack
 
 | Layer | Choice | State |
 | --- | --- | --- |
-| Rule engine | Python 3.12+, Pydantic v2, networkx, PyYAML | Implemented |
-| Backend API | FastAPI, SQLAlchemy 2, Alembic, WebSockets | Planned |
-| Database | Neon Postgres (free tier) | Planned |
-| File storage | Cloudflare R2 (S3-compatible, via boto3) | Planned |
-| Voice | LiveKit Cloud + LiveKit Agents (Python) | Planned |
-| STT | Groq Whisper `whisper-large-v3-turbo` | Planned |
-| LLM | Groq `openai/gpt-oss-120b` / `openai/gpt-oss-20b`; fallback OpenAI GPT-5.4 mini / GPT-5.4 | Planned |
-| TTS | Deepgram Aura and Cartesia (both, selectable) | Planned |
-| Frontend | React + Vite + TypeScript, Tailwind, React Flow | Planned |
-| Deploy | Docker, GitHub Actions, Cloudflare Pages, Render/Fly | Planned |
+| Rule engine | Python 3.12+, Pydantic v2, networkx, PyYAML | Implemented, tested |
+| Backend API | FastAPI, SQLAlchemy 2, PyJWT | Implemented, tested |
+| Database | SQLite locally; Neon Postgres in deployment | SQLite verified; Postgres not yet run |
+| File storage | Local disk; Cloudflare R2 via boto3 when configured | Local verified; R2 not yet run |
+| Knowledge search | fastembed or hashed fallback; vectors stored as JSON | Fallback verified |
+| Voice agent | LiveKit Agents 1.8 (Python), one deployment | Written; not run live |
+| Speech | Deepgram and Cartesia for STT and TTS ([0005](/decisions/0005-deepgram-cartesia-speech.md)) | Not run live |
+| LLM | Groq `openai/gpt-oss-120b`; fallback OpenAI `gpt-5.4-mini` | Not run live |
+| Web app | React 19, Vite, TypeScript, Tailwind 4, LiveKit components | Implemented; builds |
+| Hosting | Modal (backend), LiveKit Cloud (agent), static host (web app) | Files written; not deployed |
+| CI | GitHub Actions: pytest, OKF check, web build | Written; not yet run on GitHub |
 
 See [system architecture](/architecture/system.md).
 
 # Repository layout
 
-| Path | Contents | State |
-| --- | --- | --- |
-| `details.md` | Original concept and MVP specification | Exists |
-| `PLAN.md` | Finalized build plan | Exists |
-| `AGENTS.md` | Agent operating instructions | Exists |
-| `okf/` | This knowledge bundle | Exists |
-| `backend/app/engine/` | Rule engine: models, analyzer, loader | Implemented |
-| `backend/tests/` | Golden tests for both rule packs | Implemented |
-| `rulepacks/` | `hospital_discharge.yaml`, `corporate_lifecycle.yaml` | Implemented |
-| `scripts/check_okf.py` | Knowledge-bundle validator | Implemented |
-| `backend/app/api/`, `backend/app/storage/`, `agent/`, `frontend/` | Empty placeholders | Not started |
+| Path | Contents |
+| --- | --- |
+| `details.md`, `PLAN.md`, `README.md`, `AGENTS.md` | Concept, plan, how to run, agent instructions |
+| `okf/` | This knowledge bundle |
+| `backend/app/engine/` | Rule engine |
+| `backend/app/{api,services,rag,tools,storage,seed}/` | Platform backend |
+| `backend/tests/` | Engine golden tests and API tests |
+| `backend/modal_app.py` | Modal deployment entry point |
+| `agent/` | The single LiveKit agent |
+| `frontend/src/{patient,ops,studio,components,lib}/` | Web app |
+| `rulepacks/` | Seed rule packs for the two demo organisations |
+| `scripts/check_okf.py` | Knowledge-bundle validator |
 
 # Conventions
 

@@ -3,8 +3,9 @@ type: Decision Record
 title: "0004: Domains, providers and budget"
 description: User decisions on domains, language, timeline, LLM, STT and TTS providers, under a free-tier budget.
 tags: [decision, providers, scope]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: 0005-deepgram-cartesia-speech.md
 decided_on: 2026-11-08
 generated: { by: copilot-sdk-agent/claude, at: "2026-11-08T17:39:00+05:30" }
 sources:
@@ -12,6 +13,8 @@ sources:
     resource: ../../PLAN.md
     title: Finalized build plan
 ---
+
+> **Superseded** on 2026-11-09 by [0005](0005-deepgram-cartesia-speech.md): Groq Whisper is dropped; Deepgram and Cartesia provide both STT and TTS.
 
 # Decision
 
