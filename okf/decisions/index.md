@@ -15,3 +15,4 @@
 * [0013 AI drafts rules; staff approve them](0013-ai-rule-drafts.md) - Drafts from documents or chat become rules only after approval
 * [0014 Backend on Modal and a simple stack](0014-modal-hosting-and-simple-stack.md) - Modal, Neon, no migrations yet, uploads through the backend
 * [0015 Plain dashboard design](0015-plain-dashboard-design.md) - Flat neutral colours, no neon or gradients
+* [0016 Deploy with a manual GitHub Actions workflow](0016-deploy-with-github-actions.md) - Modal, LiveKit Cloud and Cloudflare Pages from one workflow; keys as GitHub secrets

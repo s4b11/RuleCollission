@@ -4,7 +4,7 @@ title: Current state
 description: Verified handover snapshot of what is implemented, unverified, blocked and next.
 tags: [status, handover]
 status: stable
-generated: { by: claude-code/claude, at: "2026-11-10T10:52:00+00:00" }
+generated: { by: claude-code/claude, at: "2026-11-10T11:25:00+00:00" }
 verified:
   - { by: "process:pytest", at: "2026-11-10T10:52:00+00:00" }
 ---
@@ -23,7 +23,7 @@ The project is now a configurable multi-organisation platform ([0006](/decisions
 # Written but not verified
 
 - **LiveKit agent** (`agent/`): loads against livekit-agents 1.8; config fetch and a tool call tested against a local backend. Not run in a live room: speech, model, transcript events, MCP attachment, phone dispatch, keypad input and the 3-minute cut-off are untested.
-- **Modal deployment** (`backend/modal_app.py`): loads with the Modal SDK; never deployed.
+- **Deployment**: `backend/modal_app.py` loads with the Modal SDK and the [deploy workflow](/decisions/0016-deploy-with-github-actions.md) parses as valid YAML; neither has run. The workflow needs the repository secrets and must be on the default branch.
 - **AI rule drafting**: tested with a stand-in model reply; not with a real model.
 - **Cloudflare R2 storage path** and **Postgres**: only local disk and SQLite have run.
 - **fastembed embeddings**: tests use the hashed fallback.
@@ -41,6 +41,6 @@ PDF reports, the engine improvements in [engine limitation resolutions](/develop
 # Next actions
 
 1. Create provider accounts, fill `.env`, run the agent locally (`python agent.py dev`) and fix whatever the first live session shows.
-2. Deploy the backend to Modal with Neon and R2; deploy the agent; point a LiveKit number at it.
+2. Add the GitHub secrets, merge to the default branch, run the Deploy workflow and fix what the first run shows; then point a LiveKit number at the agent.
 3. Engine fixes §5, §1 and §6 from [engine limitation resolutions](/development/engine-limitations.md).
 4. Remove the unused Vite template files listed in known issues.

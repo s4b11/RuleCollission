@@ -58,10 +58,32 @@ cd frontend && npm run build                      # type-check and build
 
 ## Deploy
 
-1. **Database:** create a Neon Postgres database and copy its connection string.
-2. **Backend on Modal:** create a Modal secret named `rulecollision` with the backend values from [`.env.example`](.env.example), then `cd backend && modal deploy modal_app.py`.
-3. **Agent on LiveKit Cloud:** `cd agent && lk agent create`, and add the agent values from `.env.example` as secrets. Only one agent deployment is needed; every organisation shares it.
-4. **Phone:** in LiveKit Cloud, get a phone number and add a dispatch rule that sends calls to the agent named `rulecollision`. Enter the number in Agent Studio → QR codes and phone. Calls end after 3 minutes.
-5. **Web app:** build `frontend/` with `VITE_API_URL` set and host the `dist/` folder (for example on Cloudflare Pages).
+Deployment runs in GitHub Actions, so no key is ever stored in the repository. The workflow is [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
+1. Create accounts: Modal, LiveKit Cloud, Neon (Postgres), Deepgram, Groq and Cloudflare.
+2. In the repository, open **Settings → Secrets and variables → Actions** and add:
+
+   | Secrets (required) | Where it comes from |
+   | --- | --- |
+   | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` | Modal → Settings → API tokens |
+   | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | LiveKit Cloud → Settings → Keys |
+   | `DATABASE_URL` | Neon connection string |
+   | `JWT_SECRET`, `AGENT_API_KEY` | Two long random strings you make up |
+   | `DEMO_PASSWORD` | Password for the demo accounts |
+   | `DEEPGRAM_API_KEY`, `GROQ_API_KEY` | Deepgram and Groq consoles |
+   | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Cloudflare (token with Account → Cloudflare Pages → Edit) |
+
+   Optional secrets: `CARTESIA_API_KEY`, `OPENAI_API_KEY`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
+
+   | Variables | Value |
+   | --- | --- |
+   | `BACKEND_URL` | `https://<modal-workspace>--rulecollision-backend-api.modal.run` |
+   | `WEB_APP_URL` | `https://rulecollision.pages.dev` (Cloudflare shows the exact address after the first deploy) |
+
+3. Open **Actions → Deploy → Run workflow**. Choose `all`, or one part.
+4. The first agent run creates the agent and commits `agent/livekit.toml` (ids only, no secrets).
+5. **Phone:** in LiveKit Cloud, get a phone number and add a dispatch rule that sends calls to the agent named `rulecollision`. Enter the number in Agent Studio → QR codes and phone. Calls end after 3 minutes.
+
+If an address turns out different from the variable you set, correct the variable and run the workflow again.
 
 All data in this repository is fictional. Never commit real patient, employee or institution data, or any keys.
