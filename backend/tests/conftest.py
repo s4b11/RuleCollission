@@ -1,3 +1,11 @@
+import os
+import tempfile
+
+os.environ["DATABASE_URL"] = f"sqlite:///{tempfile.mkdtemp()}/test.db"
+os.environ["FILES_DIR"] = tempfile.mkdtemp()
+os.environ["EMBEDDER"] = "hash"
+os.environ["LIVEKIT_URL"] = ""
+
 from datetime import date
 
 import pytest
@@ -29,3 +37,24 @@ def decide(case_id: str, kind: DecisionKind, target: str, by: StaffIdentity, **k
 def make_case(case_id: str, goal: str, held: list[str], **kw) -> Case:
     kw.setdefault("as_of", AS_OF)
     return Case(id=case_id, goal=goal, held=[HeldDocument(document=d) for d in held], **kw)
+
+
+@pytest.fixture(scope="session")
+def client():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    with TestClient(app) as test_client:
+        yield test_client
+
+
+@pytest.fixture(scope="session")
+def login(client):
+    def sign_in(email: str) -> dict:
+        response = client.post("/auth/login", json={"email": email, "password": "demo1234"})
+        return {"Authorization": f"Bearer {response.json()['token']}"}
+    return sign_in
+
+
+AGENT = {"X-Agent-Key": "dev-agent-key"}
