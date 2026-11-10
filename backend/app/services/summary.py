@@ -1,3 +1,5 @@
+from datetime import date
+
 import networkx as nx
 
 from ..engine.analyzer import atoms
@@ -50,25 +52,35 @@ def case_summary(case: Case, pack: RulePack) -> dict:
     }
 
 
+def in_force(rule, today: date) -> bool:
+    return not (rule.effective_from and today < rule.effective_from) and not (
+        rule.effective_until and today > rule.effective_until)
+
+
 def case_graph(case: Case, pack: RulePack) -> dict:
     documents, offices = names(pack)
     aliases = {a: d.id for d in pack.documents for a in d.aliases}
-    graph = nx.DiGraph()
+    today = date.today()
     reported = [(r["office"], r["produces"], r.get("prerequisites")) for r in case.reported]
     overridden = {(office, produces) for office, produces, _ in reported}
     rules = reported + [
-        (r.office, r.produces, r.prerequisites) for r in pack.requirements if (r.office, r.produces) not in overridden
+        (r.office, r.produces, r.prerequisites) for r in pack.requirements
+        if in_force(r, today) and (r.office, r.produces) not in overridden
     ]
+    graph = nx.DiGraph()
+    graph.add_node(case.goal)
     for office, produces, prerequisites in rules:
         graph.add_node(produces, office=office)
         for term in atoms(prerequisites):
             graph.add_edge(aliases.get(term, term), produces)
-    if case.goal not in graph:
-        graph.add_node(case.goal)
+    graph = graph.subgraph(nx.ancestors(graph, case.goal) | {case.goal})
 
-    relevant = nx.ancestors(graph, case.goal) | {case.goal}
-    depth = nx.single_source_shortest_path_length(graph.reverse(), case.goal)
-    deepest = max(depth.values(), default=0)
+    # Documents that wait on each other share a row, so a loop is easy to see.
+    groups = nx.condensation(graph)
+    row = {}
+    for group in nx.topological_sort(groups):
+        row[group] = max((row[before] + 1 for before in groups.predecessors(group)), default=0)
+
     analysis = case.analysis or {}
     held = {d.document for d in case.subject.documents}
     on_route = {s["document"] for s in (analysis.get("route") or {}).get("steps", [])}
@@ -88,11 +100,10 @@ def case_graph(case: Case, pack: RulePack) -> dict:
             "id": doc,
             "name": documents.get(doc, doc),
             "office": offices.get(graph.nodes[doc].get("office", ""), ""),
-            "column": deepest - depth[doc],
+            "row": row[groups.graph["mapping"][doc]],
             "state": state(doc),
             "goal": doc == case.goal,
         }
-        for doc in sorted(relevant)
+        for doc in sorted(graph.nodes)
     ]
-    edges = [{"from": a, "to": b} for a, b in graph.edges if a in relevant and b in relevant]
-    return {"nodes": nodes, "edges": edges}
+    return {"nodes": nodes, "edges": [{"from": a, "to": b} for a, b in graph.edges]}

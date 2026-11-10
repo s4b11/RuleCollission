@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import (AgentSession, Case, CaseNote, ReviewRequest, StaffUser, Subject, SubjectDocument)
+from ..models import AgentSession, Case, CaseNote, ReviewRequest, RulePackVersion, StaffUser, Subject, SubjectDocument
 from ..security import current_staff
 from ..services import cases
 from ..services.rulepacks import active_pack
@@ -63,7 +63,9 @@ def latest_cases(db: Session, org_id: str) -> dict:
 
 def review_view(db: Session, review: ReviewRequest) -> dict:
     case = db.get(Case, review.case_id)
+    _, offices = names(active_pack(db, case.org_id, case.pack_id))
     return {
+        "office_name": offices.get(review.target_office, review.target_office),
         "id": review.id, "case_id": case.id, "case_code": case.code, "subject": case.subject.name,
         "kind": review.kind, "about": review.about, "office": review.target_office, "question": review.question,
         "status": review.status, "answer": review.answer, "answered_by": review.answered_by,
@@ -87,6 +89,17 @@ def overview(user: StaffUser = Depends(current_staff), db: Session = Depends(get
         "my_reviews": len([r for r in reviews if r.target_office in ("", user.office)]),
         "sessions": db.query(AgentSession).filter_by(org_id=user.org_id).count(),
     }
+
+
+@router.get("/catalogue")
+def catalogue(user: StaffUser = Depends(current_staff), db: Session = Depends(get_db)):
+    rows = db.scalars(select(RulePackVersion).where(RulePackVersion.org_id == user.org_id, RulePackVersion.active))
+    return [
+        {"pack_id": r.pack_id, "name": r.data["name"],
+         "documents": [{"id": d["id"], "name": d["name"]} for d in r.data["documents"]],
+         "offices": [{"id": o["id"], "name": o["name"]} for o in r.data["offices"]]}
+        for r in rows
+    ]
 
 
 @router.get("/subjects")
