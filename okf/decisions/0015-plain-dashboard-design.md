@@ -3,11 +3,14 @@ type: Decision Record
 title: "0015: Plain dashboard design"
 description: The web app uses a flat, neutral design with one accent colour; no neon colours and no gradients.
 tags: [decision, design, frontend]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: 0017-polished-dashboard-design.md
 decided_on: 2026-11-10
 generated: { by: claude-code/claude, at: "2026-11-10T10:50:00+00:00" }
 ---
+
+> **Superseded** on 2026-11-10 by [0017](0017-polished-dashboard-design.md).
 
 # Decision
 

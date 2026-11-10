@@ -4,7 +4,7 @@ title: Platform features
 description: What the patient assistant, staff dashboard, Agent Studio and agent tools do, and which tests cover them.
 tags: [features, dashboard, studio, agent, implemented]
 status: stable
-generated: { by: claude-code/claude, at: "2026-11-10T10:52:00+00:00" }
+generated: { by: claude-code/claude, at: "2026-11-10T21:59:00+00:00" }
 verified:
   - { by: "process:pytest", at: "2026-11-10T10:52:00+00:00" }
 sources:
@@ -60,6 +60,6 @@ Listed in [decision 0010](/decisions/0010-tools-read-propose-note.md). Case tool
 | External tools cannot reach private addresses | `test_external_tools_cannot_reach_private_addresses` |
 | Case lookup and QR link | `test_public_case_lookup_needs_code_and_identifier`, `test_qr_code_points_to_the_web_app` |
 
-Browser checks on 2026-11-10 (Playwright, local): all pages render without console errors; nurse refused, Billing approves, TPA accepts, route confirmed; rule chat shows a clear message when no model key is set. Not covered by an automated browser test in the repository.
+The interface follows [decision 0017](/decisions/0017-polished-dashboard-design.md). Browser checks on 2026-11-10 after the redesign (Playwright, local, 1440 px and phone width): all pages render without console errors; nurse refused, Billing approves, TPA accepts, route confirmed; rule chat shows a clear message when no model key is set. Not covered by an automated browser test in the repository.
 
 [^tests]: API tests

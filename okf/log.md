@@ -1,6 +1,8 @@
 # RuleCollision update log
 
 ## 2026-11-10
+* **Update**: First deploy succeeded (Modal, LiveKit Cloud, Cloudflare Pages); live use not yet confirmed. See [current state](/current-state.md).
+* **Decision**: [0017](/decisions/0017-polished-dashboard-design.md) redesigns the web app; [0015](/decisions/0015-plain-dashboard-design.md) deprecated.
 * **Update**: The deploy workflow now discovers the web and backend addresses itself ([0016](/decisions/0016-deploy-with-github-actions.md)).
 * **Decision**: [0016](/decisions/0016-deploy-with-github-actions.md) deploys backend, agent and web app from one manual GitHub Actions workflow.
 * **Decision**: Recorded [0006](/decisions/0006-configurable-platform.md) through [0015](/decisions/0015-plain-dashboard-design.md): configurable platform, single dynamic agent, WebRTC and polling, knowledge search, tool limits, phone and identification, transcripts only, AI rule drafts, Modal hosting, plain design.

@@ -1,20 +1,36 @@
+@import "@fontsource-variable/inter";
 @import "tailwindcss";
 
 @theme {
-  --color-page: #f5f6f8;
-  --color-line: #e2e5ea;
-  --color-ink: #1c2430;
+  --color-page: #f6f7f9;
+  --color-line: #e4e7ec;
+  --color-ink: #101828;
+  --color-body: #344054;
   --color-muted: #667085;
-  --color-brand: #1f5f8b;
-  --color-brand-dark: #184b6e;
-  --color-brand-soft: #e8f0f6;
-  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --color-brand: #2f5fd0;
+  --color-brand-dark: #2449a8;
+  --color-brand-soft: #eef3fd;
+  --color-side: #101828;
+  --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-pop: 0 8px 24px rgb(16 24 40 / 0.12);
 }
 
 body {
   margin: 0;
   background: var(--color-page);
-  color: var(--color-ink);
+  color: var(--color-body);
   font-family: var(--font-sans);
   font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, b, strong {
+  color: var(--color-ink);
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.7); opacity: 0; }
 }
