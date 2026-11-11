@@ -29,9 +29,9 @@ type CardProps = { title?: string; icon?: LucideIcon; action?: ReactNode; childr
 
 export function Card({ title, icon: Icon, action, children, className = '', flush }: CardProps) {
   return (
-    <section className={`rounded-xl border border-line bg-white shadow-card ${className}`}>
+    <section className={`min-w-0 rounded-xl border border-line bg-white shadow-card ${className}`}>
       {title && (
-        <header className="flex min-h-13 items-center justify-between gap-3 border-b border-line px-5 py-3">
+        <header className="flex min-h-13 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-line px-4 py-3 sm:px-5">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             {Icon && <Icon size={16} className="text-muted" />}
             {title}
@@ -39,7 +39,7 @@ export function Card({ title, icon: Icon, action, children, className = '', flus
           {action}
         </header>
       )}
-      <div className={flush ? '' : 'p-5'}>{children}</div>
+      <div className={flush ? '' : 'p-4 sm:p-5'}>{children}</div>
     </section>
   )
 }
@@ -124,7 +124,7 @@ export function Table({ head, children }: { head: string[]; children: ReactNode 
             {head.map((h) => <th key={h} className="px-5 py-2.5 font-medium whitespace-nowrap">{h}</th>)}
           </tr>
         </thead>
-        <tbody className="[&>tr]:border-b [&>tr]:border-line [&>tr:hover]:bg-slate-50/60 [&>tr:last-child]:border-0 [&_td]:px-5 [&_td]:py-3">
+        <tbody className="[&>tr]:border-b [&>tr]:border-line [&>tr:hover]:bg-slate-50/60 [&>tr:last-child]:border-0 [&_td]:px-5 [&_td]:py-3 [&_td]:whitespace-nowrap">
           {children}
         </tbody>
       </table>
@@ -153,11 +153,11 @@ export function ErrorText({ children }: { children: ReactNode }) {
 
 export function StatTile({ icon: Icon, label, value, tone = 'blue' }: { icon: LucideIcon; label: string; value: number; tone?: Tone }) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-line bg-white p-5 shadow-card">
-      <span className={`flex h-11 w-11 items-center justify-center rounded-lg ${TONES[tone].icon}`}><Icon size={20} /></span>
-      <div>
+    <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-line bg-white p-4 shadow-card sm:flex-row sm:items-center sm:gap-4 sm:p-5">
+      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-11 sm:w-11 ${TONES[tone].icon}`}><Icon size={18} /></span>
+      <div className="min-w-0">
         <div className="text-2xl font-semibold tracking-tight text-ink">{value}</div>
-        <div className="text-xs text-muted">{label}</div>
+        <div className="text-xs leading-snug text-muted">{label}</div>
       </div>
     </div>
   )

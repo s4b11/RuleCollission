@@ -129,8 +129,8 @@ export default function Rules() {
           <div className="mt-2 whitespace-pre-wrap"><ErrorText>{error}</ErrorText></div>
         </Card>
       )}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           <div>
             <h2 className="mb-3 text-sm font-semibold">Drafts waiting for your approval</h2>
             <div className="space-y-3">

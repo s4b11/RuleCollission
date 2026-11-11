@@ -26,7 +26,7 @@ export default function Overview() {
         <StatTile icon={Inbox} tone="red" label="Questions for your office" value={overview.data.my_reviews} />
         <StatTile icon={CircleCheckBig} tone="green" label="Routes confirmed" value={byStatus.route_confirmed ?? 0} />
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold">Questions for your office</h2>

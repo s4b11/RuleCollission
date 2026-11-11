@@ -66,8 +66,8 @@ export default function CaseDetail() {
       ]} />
 
       {tab === 'overview' && (
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="min-w-0 space-y-6 lg:col-span-2">
             <Card><CaseSummary summary={summary} hideQuestions /></Card>
             {reviews.length > 0 && (
               <div>
@@ -117,7 +117,7 @@ export default function CaseDetail() {
       )}
 
       {tab === 'activity' && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Card title="Staff decisions" icon={Gavel}>
             {decisions.length === 0 && <Empty icon={Gavel}>No decisions recorded.</Empty>}
             <ul className="space-y-4">

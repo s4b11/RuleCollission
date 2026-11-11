@@ -32,7 +32,7 @@ export default function ReviewCard({ review, showCase, onDone }: { review: Revie
   }
 
   return (
-    <div className="rounded-xl border border-line bg-white p-5 shadow-card">
+    <div className="min-w-0 rounded-xl border border-line bg-white p-4 shadow-card sm:p-5">
       <div className="mb-2.5 flex flex-wrap items-center gap-2 text-xs text-muted">
         <Badge tone="blue">{QUESTION_KIND[review.kind] ?? review.kind}</Badge>
         {review.office_name && <span>for {review.office_name}</span>}
@@ -41,7 +41,7 @@ export default function ReviewCard({ review, showCase, onDone }: { review: Revie
             {review.subject} · {review.case_code}
           </Link>
         )}
-        <span className="ml-auto">{shortDate(review.created_at)}</span>
+        <span className="w-full sm:ml-auto sm:w-auto">{shortDate(review.created_at)}</span>
       </div>
       <p className="text-ink">{review.question}</p>
       {review.status === 'open' ? (
