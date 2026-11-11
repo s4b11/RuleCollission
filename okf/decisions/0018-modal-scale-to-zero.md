@@ -1,7 +1,7 @@
 ---
 type: Decision Record
 title: "0018: Backend scales to zero on Modal"
-description: No always-on Modal container; the backend starts on the first request and stops after 5 idle minutes, and the web app tells people when the server is waking up.
+description: No always-on Modal container; the backend starts on the first request and stops after 5 idle minutes, and the web app shows its normal loading spinners meanwhile.
 tags: [decision, operations, hosting, cost]
 status: stable
 decision_status: accepted
@@ -17,7 +17,7 @@ The user has a monthly Modal allowance of 30 USD and asked for no minimum instan
 
 - `backend/modal_app.py`: no `min_containers`; `scaledown_window=300`, so a container stops after 5 minutes without requests.
 - The embedding model (`BAAI/bge-small-en-v1.5`) is downloaded into the image at build time (`FASTEMBED_CACHE_PATH=/models`), so a cold start does not download it.
-- The web app shows "Waking up the server…" when a page load, sign-in, case lookup or session start takes over 3 seconds (`SlowHint` in `frontend/src/components/ui.tsx`).
+- During a cold start the web app shows only its normal spinners and "Loading…"; no extra message (user preference).
 
 # Consequences
 

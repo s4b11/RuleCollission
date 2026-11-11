@@ -1,7 +1,7 @@
 import { GitCompareArrows, MessageCircleQuestion, ShieldCheck } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Logo } from './components/Layout'
-import { Button, ErrorText, Field, Input, SlowHint } from './components/ui'
+import { Button, ErrorText, Field, Input } from './components/ui'
 import { api, setToken } from './lib/api'
 
 const DEMO = [
@@ -73,7 +73,6 @@ export default function Login() {
             </Field>
             <ErrorText>{error}</ErrorText>
             <Button type="submit" className="w-full" loading={busy}>{busy ? 'Signing in…' : 'Sign in'}</Button>
-            <SlowHint active={busy} className="text-center" />
           </form>
 
           <div className="mt-8 rounded-xl border border-line bg-white shadow-card">
