@@ -15,7 +15,7 @@ image = (
 app = modal.App("rulecollision-backend", image=image, secrets=[modal.Secret.from_name("rulecollision")])
 
 
-@app.function(scaledown_window=300)
+@app.function(scaledown_window=90)
 @modal.concurrent(max_inputs=50)
 @modal.asgi_app()
 def api():
