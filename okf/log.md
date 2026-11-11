@@ -1,7 +1,7 @@
 # RuleCollision update log
 
 ## 2026-11-11
-* **Decision**: [0018](/decisions/0018-modal-scale-to-zero.md) removes the always-on Modal container; the backend stops after 5 idle minutes and the web app shows its normal spinners while it starts.
+* **Decision**: [0018](/decisions/0018-modal-scale-to-zero.md) removes the always-on Modal container; the backend stops after 1.5 idle minutes and the web app shows its normal spinners while it starts.
 * **Update**: Loading spinners on pages and buttons; failed page loads show an error and "Try again". See [platform features](/features/platform.md).
 * **Fix**: Pages no longer run wider than a phone screen; layout checked at 390 px and 360 px. See [platform features](/features/platform.md).
 
