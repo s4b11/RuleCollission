@@ -2,7 +2,7 @@ import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 import { FileText, IdCard, Mic, Phone, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { Button, ErrorText, PageLoader } from '../components/ui'
+import { Button, ErrorText, PageLoader, SlowHint } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import CaseView from './CaseView'
 import Conversation from './Conversation'
@@ -17,14 +17,17 @@ export default function Assistant() {
   const info = useLoad(`/public/agents/${slug}?loc=${location}`)
   const [session, setSession] = useState<Session | null>(null)
   const [error, setError] = useState('')
+  const [starting, setStarting] = useState(false)
   const state = useLoad(session ? `/public/sessions/${session.session_id}?token=${session.session_token}` : null, 3)
 
   async function start() {
+    setStarting(true)
     try {
       setSession(await api(`/public/agents/${slug}/sessions`, { body: { location_id: location } }))
     } catch (e) {
       setError((e as Error).message)
     }
+    setStarting(false)
   }
 
   if (!info.data) return <Shell><PageLoader error={info.error} retry={info.reload} /></Shell>
@@ -61,6 +64,7 @@ export default function Assistant() {
               <Button size="lg" icon={Mic} onClick={start} disabled={!info.data.voice_ready} className="w-full sm:w-auto">Start talking</Button>
               <Link to="/case" className="text-center text-sm font-medium text-brand hover:underline">I already have a case code</Link>
             </div>
+            <SlowHint active={starting} className="mt-4" />
             {!info.data.voice_ready && <p className="mt-4 text-xs text-muted">The voice service is not connected on this server yet.</p>}
             {info.data.phone_number && (
               <p className="mt-4 flex items-center gap-2 text-sm text-muted">

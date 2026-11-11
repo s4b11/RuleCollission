@@ -17,3 +17,4 @@
 * [0015 Plain dashboard design](0015-plain-dashboard-design.md) - **Deprecated**, superseded by 0017
 * [0016 Deploy with a manual GitHub Actions workflow](0016-deploy-with-github-actions.md) - Modal, LiveKit Cloud and Cloudflare Pages from one workflow; keys as GitHub secrets
 * [0017 Polished dashboard design](0017-polished-dashboard-design.md) - Icons, bundled font, soft shadows, dark sidebar; still no neon or gradients
+* [0018 Backend scales to zero on Modal](0018-modal-scale-to-zero.md) - No always-on container; stops after 5 idle minutes; "waking up" hint in the web app
