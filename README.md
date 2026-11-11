@@ -34,17 +34,23 @@ pip install -r requirements.txt
 python agent.py dev
 ```
 
-Sign in at `http://localhost:5173/login` with a demo account, password `demo1234`:
+Sign in at `http://localhost:5173/login` with a demo account. Locally the password is `demo1234`; on a deployed server it is the `DEMO_PASSWORD` secret. Every office has a sign-in; the main ones:
 
 | Account | Role |
 | --- | --- |
 | `admin@sunrise.example` | Hospital administrator (can open Agent Studio) |
 | `billing@sunrise.example` | Billing approver |
 | `tpa@sunrise.example` | Insurance (TPA) approver |
+| `doctor@sunrise.example` | Treating doctor |
 | `ward@sunrise.example` | Ward nurse (cannot approve exceptions) |
-| `admin@northwind.example` | The second organisation |
+| `admin@northwind.example` | Northwind HR administrator (can open Agent Studio) |
+| `it@northwind.example` | Northwind IT approver |
+| `legal@northwind.example` | Northwind Legal approver |
+| `finance@northwind.example` | Northwind Payroll approver |
 
-The patient page is `http://localhost:5173/a/sunrise-discharge`. A demo patient: admission number `SGH-2026-0412`, year of birth `1958`.
+The full list is in `backend/app/seed/demo.py`.
+
+Patient pages: `http://localhost:5173/a/sunrise-discharge` and `http://localhost:5173/a/northwind-people`. A demo patient: admission number `SGH-2026-0412`, year of birth `1958`. On `/case`, try code `SGH424` with `SGH-2026-0424`, or `NW1051` with `NW-1051`.
 
 Without provider keys, everything except live conversations and AI rule drafting works.
 

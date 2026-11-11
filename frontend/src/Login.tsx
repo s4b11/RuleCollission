@@ -5,12 +5,20 @@ import { Button, ErrorText, Field, Input } from './components/ui'
 import { api, setToken } from './lib/api'
 
 const DEMO = [
-  ['admin@sunrise.example', 'Hospital administrator', 'Agent Studio'],
-  ['billing@sunrise.example', 'Billing approver', 'Hospital'],
-  ['tpa@sunrise.example', 'Insurance (TPA) approver', 'Hospital'],
-  ['ward@sunrise.example', 'Ward nurse', 'Hospital'],
-  ['admin@northwind.example', 'Company administrator', 'Second organisation'],
-]
+  ['Sunrise General Hospital', [
+    ['admin@sunrise.example', 'Hospital administrator', 'Agent Studio'],
+    ['billing@sunrise.example', 'Billing approver', 'Billing'],
+    ['tpa@sunrise.example', 'Insurance (TPA) approver', 'TPA'],
+    ['doctor@sunrise.example', 'Treating doctor', 'Doctor'],
+    ['ward@sunrise.example', 'Ward nurse', 'Ward'],
+  ]],
+  ['Northwind Labs', [
+    ['admin@northwind.example', 'HR administrator', 'Agent Studio'],
+    ['it@northwind.example', 'IT service desk', 'IT'],
+    ['legal@northwind.example', 'Legal approver', 'Legal'],
+    ['finance@northwind.example', 'Payroll approver', 'Finance'],
+  ]],
+] as const
 
 const POINTS = [
   [GitCompareArrows, 'Finds the loop', 'Shows exactly which offices are waiting on each other, and why.'],
@@ -75,17 +83,22 @@ export default function Login() {
             <Button type="submit" className="w-full" loading={busy}>{busy ? 'Signing in…' : 'Sign in'}</Button>
           </form>
 
-          <div className="mt-8 rounded-xl border border-line bg-white shadow-card">
+          <div className="mt-8 overflow-hidden rounded-xl border border-line bg-white shadow-card">
             <p className="border-b border-line px-4 py-2.5 text-xs font-medium text-muted">Demo accounts — click one to fill the email</p>
-            {DEMO.map(([address, role, group]) => (
-              <button key={address} type="button" onClick={() => setEmail(address)}
-                className="flex w-full items-center justify-between gap-3 border-b border-line px-4 py-2.5 text-left last:border-0 hover:bg-slate-50">
-                <span>
-                  <span className="block text-sm font-medium text-ink">{role}</span>
-                  <span className="text-xs text-muted">{address}</span>
-                </span>
-                <span className="text-xs text-muted">{group}</span>
-              </button>
+            {DEMO.map(([organisation, accounts]) => (
+              <div key={organisation}>
+                <p className="bg-slate-50/70 px-4 py-1.5 text-[11px] font-semibold tracking-wider text-muted uppercase">{organisation}</p>
+                {accounts.map(([address, role, office]) => (
+                  <button key={address} type="button" onClick={() => setEmail(address)}
+                    className="flex w-full items-center justify-between gap-3 border-t border-line px-4 py-2.5 text-left hover:bg-slate-50">
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium text-ink">{role}</span>
+                      <span className="block truncate text-xs text-muted">{address}</span>
+                    </span>
+                    <span className="shrink-0 text-xs text-muted">{office}</span>
+                  </button>
+                ))}
+              </div>
             ))}
           </div>
         </div>

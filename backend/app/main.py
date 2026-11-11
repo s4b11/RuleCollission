@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import config
 from .api import agent_internal, auth, ops, public, studio
 from .db import Base, SessionLocal, engine
-from .seed.demo import seed_if_empty
+from .seed.demo import seed_demo
 
 
 @asynccontextmanager
@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(engine)
     if config.SEED_DEMO:
         with SessionLocal() as db:
-            seed_if_empty(db)
+            seed_demo(db)
     yield
 
 

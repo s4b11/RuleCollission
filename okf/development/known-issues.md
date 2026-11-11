@@ -32,11 +32,13 @@ Proposed resolutions: [engine limitation resolutions](engine-limitations.md). No
 - **Engine question wording uses internal ids** in places (for example `'interim_bill'`).
 - **One agent profile per organisation** is assumed by the Studio pages.
 - **Staff token is kept in browser local storage.**
+- **The demo seed has no lock.** Two backend containers starting at the same moment could both add the same new demo row ([0019](/decisions/0019-seed-adds-missing-demo-data.md)). Unlikely with one container; demo only.
+- **Uploaded knowledge files live in the container's `/tmp`** on Modal unless R2 is configured, so the original file is lost when the container stops; the searchable passages stay in the database.
 
 # Technical debt
 
 - No database migrations ([0014](/decisions/0014-modal-hosting-and-simple-stack.md)).
-- No automated browser tests; no linter in CI.
+- Browser end-to-end checks exist only as local Playwright scripts, not in CI; no linter in CI.
 - Unused Vite template files are committed but not referenced: `frontend/src/App.css`, `frontend/src/assets/`, `frontend/public/icons.svg`. Safe to delete.
 - The web app ships as one large script (about 900 kB).
 - `AGENTS.md` §8 still says the folder is not a Git repository, and its build commands are PowerShell-only.

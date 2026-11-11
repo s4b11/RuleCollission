@@ -46,7 +46,7 @@ sources:
 | `services/rule_drafts.py`, `services/llm.py` | AI rule drafts |
 | `rag/` | Document ingest, embedding, search |
 | `tools/` | Built-in tools and the external web-tool caller |
-| `seed/demo.py` | Fictional hospital and company |
+| `seed/demo.py` | Fictional hospital and company; adds missing rows on every start ([0019](/decisions/0019-seed-adds-missing-demo-data.md)) |
 
 # Main flows
 

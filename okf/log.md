@@ -1,6 +1,7 @@
 # RuleCollision update log
 
 ## 2026-11-11
+* **Update**: Much more fictional demo data for Sunrise and Northwind (all offices can sign in, cases in every state, conversations, knowledge documents); checked end to end in a browser. See [platform features](/features/platform.md) and [0019](/decisions/0019-seed-adds-missing-demo-data.md).
 * **Decision**: [0018](/decisions/0018-modal-scale-to-zero.md) removes the always-on Modal container; the backend stops after 1.5 idle minutes and the web app shows its normal spinners while it starts.
 * **Update**: Loading spinners on pages and buttons; failed page loads show an error and "Try again". See [platform features](/features/platform.md).
 * **Fix**: Pages no longer run wider than a phone screen; layout checked at 390 px and 360 px. See [platform features](/features/platform.md).

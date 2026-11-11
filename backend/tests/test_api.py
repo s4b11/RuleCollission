@@ -127,7 +127,8 @@ def test_organisations_cannot_see_each_other(client, login):
     hospital, company = login("billing@sunrise.example"), login("admin@northwind.example")
     case = case_for(client, hospital, "Arjun Menon")
     assert client.get(f"/ops/cases/{case['id']}", headers=company).status_code == 404
-    assert [c["subject"] for c in client.get("/ops/cases", headers=company).json()] == ["Rohit Sen"]
+    names = [c["subject"] for c in client.get("/ops/cases", headers=company).json()]
+    assert "Rohit Sen" in names and "Arjun Menon" not in names
 
 
 def test_only_admins_open_the_studio(client, login):
