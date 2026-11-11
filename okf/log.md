@@ -1,5 +1,8 @@
 # RuleCollision update log
 
+## 2026-11-11
+* **Fix**: Pages no longer run wider than a phone screen; layout checked at 390 px and 360 px. See [platform features](/features/platform.md).
+
 ## 2026-11-10
 * **Update**: First deploy succeeded (Modal, LiveKit Cloud, Cloudflare Pages); live use not yet confirmed. See [current state](/current-state.md).
 * **Decision**: [0017](/decisions/0017-polished-dashboard-design.md) redesigns the web app; [0015](/decisions/0015-plain-dashboard-design.md) deprecated.

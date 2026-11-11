@@ -27,11 +27,11 @@ export default function Channels() {
   return (
     <>
       <PageTitle title="QR codes and phone" subtitle="How people reach the assistant" />
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <Card title="QR codes" icon={QrCode} action={<Button variant="plain" size="sm" icon={Printer} onClick={() => window.print()}>Print</Button>}>
             <p className="mb-4 text-muted">Each code opens the web app and tells the assistant where it was scanned.</p>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {(locations.data ?? []).map((l) => (
                 <div key={l.id} className="rounded-xl border border-line p-4 text-center">
                   <img src={`${API_URL}/public/qr/${l.id}.svg`} alt={`QR code for ${l.label}`} className="mx-auto h-40 w-40" />

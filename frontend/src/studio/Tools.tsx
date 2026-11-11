@@ -36,7 +36,7 @@ export default function Tools() {
     <>
       <PageTitle title="Tools and MCP" subtitle="Connect the agent to outside systems. External tools are treated as untrusted and can never record a decision." />
       <ErrorText>{error}</ErrorText>
-      <div className="mt-4 grid gap-6 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">
           <Card title="Your web tools" icon={Globe}>
             {tools.data?.custom.length === 0 && <Empty icon={Globe}>No web tools yet. Add one to let the agent call your own system.</Empty>}

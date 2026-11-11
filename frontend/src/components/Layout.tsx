@@ -91,7 +91,7 @@ export default function Layout({ staff }: { staff: Staff }) {
       </aside>
 
       <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 sm:py-8">
-        <div className="mx-auto max-w-6xl"><Outlet context={staff} /></div>
+        <div className="mx-auto max-w-6xl min-w-0"><Outlet context={staff} /></div>
       </main>
     </div>
   )

@@ -22,7 +22,7 @@ function BedBoard({ people }: { people: Person[] }) {
     if (person.status === 'admitted') (wards[person.details.ward] ??= []).push(person)
   }
   return (
-    <div className="mb-6 grid gap-4 lg:grid-cols-2">
+    <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
       {Object.entries(wards).sort().map(([ward, patients]) => (
         <Card key={ward} title={ward} icon={BedDouble}
           action={<span className="text-xs text-muted">{patients.length} occupied</span>}>
@@ -71,7 +71,7 @@ export default function People() {
       {hasWards && <BedBoard people={people.data} />}
       <Card flush title={`All ${staff.subject_label.toLowerCase()}s`}
         action={
-          <span className="relative block w-56">
+          <span className="relative block w-full sm:w-56">
             <Search size={15} className="absolute top-2.5 left-3 text-slate-400" />
             <Input placeholder="Search name or number" value={query} onChange={(e) => setQuery(e.target.value)} className="!py-1.5 !pl-9" />
           </span>

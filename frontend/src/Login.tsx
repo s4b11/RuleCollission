@@ -35,7 +35,7 @@ export default function Login() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
+    <div className="grid grid-cols-1 min-h-screen lg:grid-cols-2">
       <div className="hidden flex-col justify-between bg-side p-12 lg:flex">
         <Logo light />
         <div>

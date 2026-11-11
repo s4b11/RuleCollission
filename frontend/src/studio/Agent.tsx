@@ -41,7 +41,7 @@ export default function Agent() {
       <PageTitle title="Agent" subtitle="Changes apply to the next conversation. Nothing needs to be redeployed."
         action={<span className="flex items-center gap-3">{saved && <span className="text-xs text-muted">Saved {saved}</span>}<Button icon={Save} onClick={save}>Save changes</Button></span>} />
       {error && <div className="mb-4"><ErrorText>{error}</ErrorText></div>}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">
           <Card title="Personality" icon={Sparkles}>
             <div className="space-y-4">

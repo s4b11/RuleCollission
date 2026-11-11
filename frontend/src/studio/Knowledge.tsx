@@ -44,8 +44,8 @@ export default function Knowledge() {
     <>
       <PageTitle title="Knowledge" subtitle="Documents the agent can search and quote. They explain; they never decide a case." />
       <ErrorText>{error}</ErrorText>
-      <div className="mt-4 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           <Card title="Documents" icon={FileText} flush>
             {documents.data?.length === 0 && <Empty icon={FileText}>No documents uploaded.</Empty>}
             <Table head={['Title', 'Passages', 'Added', '']}>
