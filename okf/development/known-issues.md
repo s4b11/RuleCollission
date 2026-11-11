@@ -44,4 +44,3 @@ Proposed resolutions: [engine limitation resolutions](engine-limitations.md). No
 # Open questions
 
 - Which LiveKit phone number, and whether a local (non-US) number is needed.
-- Whether to keep one warm Modal container (uses credits) or accept cold starts.

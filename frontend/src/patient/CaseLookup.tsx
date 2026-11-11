@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Button, ErrorText, Field, Input } from '../components/ui'
+import { Button, ErrorText, Field, Input, SlowHint } from '../components/ui'
 import { api } from '../lib/api'
 import CaseView from './CaseView'
 import Shell from './Shell'
@@ -33,6 +33,7 @@ export default function CaseLookup() {
         <Field label="Reference number"><Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} /></Field>
         <Button type="submit" icon={Search} loading={busy} disabled={!code || !identifier}>{busy ? 'Searching…' : 'Show'}</Button>
       </form>
+      <SlowHint active={busy} className="mb-4" />
       <ErrorText>{error}</ErrorText>
       {view && <CaseView view={view} />}
     </Shell>

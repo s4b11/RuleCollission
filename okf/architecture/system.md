@@ -71,7 +71,7 @@ sources:
 
 # Deployment
 
-Backend on Modal (`backend/modal_app.py`), agent on LiveKit Cloud (`agent/Dockerfile`), web app on a static host. Settings: `.env.example`. See [0014](/decisions/0014-modal-hosting-and-simple-stack.md).
+Backend on Modal (`backend/modal_app.py`, scales to zero, see [0018](/decisions/0018-modal-scale-to-zero.md)), agent on LiveKit Cloud (`agent/Dockerfile`), web app on a static host. Settings: `.env.example`. See [0014](/decisions/0014-modal-hosting-and-simple-stack.md).
 
 [^plan]: Build plan v2
 [^main]: Backend entry point

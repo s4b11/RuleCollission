@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import { AlertCircle, Inbox, Loader2, RotateCw } from 'lucide-react'
-import { useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type MouseEvent, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import { useEffect, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type MouseEvent, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { STATUS, type Tone } from '../lib/labels'
 
 const TONES: Record<Tone, { badge: string; dot: string; icon: string }> = {
@@ -176,6 +176,18 @@ export function Spinner({ size = 'md', className = '' }: { size?: 'sm' | 'md' | 
   return <Loader2 size={sizes[size]} className={`animate-spin ${className}`} aria-hidden />
 }
 
+export function SlowHint({ active, className = '' }: { active: boolean; className?: string }) {
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    setSlow(false)
+    if (!active) return
+    const timer = setTimeout(() => setSlow(true), 3000)
+    return () => clearTimeout(timer)
+  }, [active])
+  if (!active || !slow) return null
+  return <p role="status" className={`text-xs text-muted ${className}`}>Waking up the server. The first request after a quiet spell can take up to 30 seconds.</p>
+}
+
 export function PageLoader({ error, retry }: { error?: string; retry?: () => unknown }) {
   if (error) {
     return (
@@ -189,6 +201,7 @@ export function PageLoader({ error, retry }: { error?: string; retry?: () => unk
     <div role="status" className="flex flex-col items-center justify-center gap-3 py-24 text-muted">
       <Spinner size="lg" className="text-brand" />
       <span className="text-sm">Loading…</span>
+      <SlowHint active className="max-w-xs text-center" />
     </div>
   )
 }

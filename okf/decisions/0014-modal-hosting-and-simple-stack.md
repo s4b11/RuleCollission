@@ -11,7 +11,7 @@ generated: { by: claude-code/claude, at: "2026-11-10T10:50:00+00:00" }
 
 # Decision
 
-- Backend hosting: Modal (`backend/modal_app.py`), with one container kept warm so session start is not delayed. Database: Neon Postgres. Web app: any static host.
+- Backend hosting: Modal (`backend/modal_app.py`), with one container kept warm so session start is not delayed (replaced by [0018](0018-modal-scale-to-zero.md): the backend now scales to zero). Database: Neon Postgres. Web app: any static host.
 - Tables are created with SQLAlchemy `create_all`; there are no Alembic migrations yet. Local runs and tests use SQLite.
 - File uploads pass through the backend, which stores them in Cloudflare R2 when configured or on local disk otherwise. This replaces the presigned-URL flow in [0003](0003-cloudflare-r2-storage.md).
 - Passwords use PBKDF2 from the standard library; sessions use a signed JWT.
