@@ -35,8 +35,13 @@ export function useLoad<T = any>(path: string | null, refreshSeconds = 0) {
   const [error, setError] = useState('')
 
   const reload = useCallback(() => {
-    if (!path) return
-    api<T>(path).then(setData).catch((e) => setError(e.message))
+    if (!path) return Promise.resolve()
+    return api<T>(path)
+      .then((result) => {
+        setData(result)
+        setError('')
+      })
+      .catch((e) => setError(e.message))
   }, [path])
 
   useEffect(() => {
@@ -46,5 +51,5 @@ export function useLoad<T = any>(path: string | null, refreshSeconds = 0) {
     return () => clearInterval(timer)
   }, [reload, refreshSeconds])
 
-  return { data, error, reload }
+  return { data, error, reload, loading: data === null && !error }
 }

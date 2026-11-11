@@ -1,6 +1,6 @@
 import { Globe, Plug, Plus, ServerCog, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { Badge, Button, Card, Empty, ErrorText, Field, Input, PageTitle, Select, TextArea } from '../components/ui'
+import { Badge, Button, Card, Empty, ErrorText, Field, Input, PageLoader, PageTitle, Select, TextArea } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 
 const EMPTY_TOOL = { name: '', description: '', url: '', method: 'POST', parameters: '{\n  "type": "object",\n  "properties": {}\n}' }
@@ -39,6 +39,7 @@ export default function Tools() {
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">
           <Card title="Your web tools" icon={Globe}>
+            {!tools.data && <PageLoader error={tools.error} retry={tools.reload} />}
             {tools.data?.custom.length === 0 && <Empty icon={Globe}>No web tools yet. Add one to let the agent call your own system.</Empty>}
             {tools.data?.custom.map((t: any) => (
               <div key={t.id} className="mb-3 flex items-start justify-between gap-3">
@@ -76,6 +77,7 @@ export default function Tools() {
 
         <div className="space-y-6">
           <Card title="MCP servers" icon={ServerCog}>
+            {!servers.data && <PageLoader error={servers.error} retry={servers.reload} />}
             {servers.data?.length === 0 && <Empty icon={ServerCog}>No MCP servers connected.</Empty>}
             {servers.data?.map((s) => (
               <div key={s.id} className="mb-3 flex items-start justify-between gap-3">

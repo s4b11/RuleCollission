@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
-import { AlertCircle, Inbox } from 'lucide-react'
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react'
+import { AlertCircle, Inbox, Loader2, RotateCw } from 'lucide-react'
+import { useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type MouseEvent, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { STATUS, type Tone } from '../lib/labels'
 
 const TONES: Record<Tone, { badge: string; dot: string; icon: string }> = {
@@ -44,13 +44,30 @@ export function Card({ title, icon: Icon, action, children, className = '', flus
   )
 }
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
   variant?: 'primary' | 'plain' | 'danger' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
   icon?: LucideIcon
+  loading?: boolean
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => unknown
 }
 
-export function Button({ variant = 'primary', size = 'md', icon: Icon, className = '', children, ...props }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', icon: Icon, loading, onClick, disabled, className = '', children, ...props }: ButtonProps) {
+  const [working, setWorking] = useState(false)
+  const busy = loading || working
+  const iconSize = size === 'lg' ? 20 : 16
+
+  async function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    const result = onClick?.(event)
+    if (!(result instanceof Promise)) return
+    setWorking(true)
+    try {
+      await result
+    } finally {
+      setWorking(false)
+    }
+  }
+
   const variants = {
     primary: 'bg-brand text-white shadow-card hover:bg-brand-dark',
     plain: 'border border-line bg-white text-body shadow-card hover:bg-slate-50',
@@ -61,9 +78,12 @@ export function Button({ variant = 'primary', size = 'md', icon: Icon, className
   return (
     <button
       {...props}
+      onClick={handleClick}
+      disabled={disabled || busy}
+      aria-busy={busy || undefined}
       className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
     >
-      {Icon && <Icon size={size === 'lg' ? 20 : 16} />}
+      {busy ? <Loader2 size={iconSize} className="animate-spin" /> : Icon && <Icon size={iconSize} />}
       {children}
     </button>
   )
@@ -148,6 +168,28 @@ export function ErrorText({ children }: { children: ReactNode }) {
       <AlertCircle size={16} className="mt-0.5 shrink-0" />
       <span className="whitespace-pre-wrap">{children}</span>
     </p>
+  )
+}
+
+export function Spinner({ size = 'md', className = '' }: { size?: 'sm' | 'md' | 'lg'; className?: string }) {
+  const sizes = { sm: 14, md: 20, lg: 28 }
+  return <Loader2 size={sizes[size]} className={`animate-spin ${className}`} aria-hidden />
+}
+
+export function PageLoader({ error, retry }: { error?: string; retry?: () => unknown }) {
+  if (error) {
+    return (
+      <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-20 text-center">
+        <ErrorText>{error}</ErrorText>
+        {retry && <Button variant="plain" icon={RotateCw} onClick={retry}>Try again</Button>}
+      </div>
+    )
+  }
+  return (
+    <div role="status" className="flex flex-col items-center justify-center gap-3 py-24 text-muted">
+      <Spinner size="lg" className="text-brand" />
+      <span className="text-sm">Loading…</span>
+    </div>
   )
 }
 

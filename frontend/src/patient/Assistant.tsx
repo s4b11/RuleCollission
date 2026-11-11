@@ -2,7 +2,7 @@ import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 import { FileText, IdCard, Mic, Phone, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { Button, ErrorText } from '../components/ui'
+import { Button, ErrorText, PageLoader } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import CaseView from './CaseView'
 import Conversation from './Conversation'
@@ -27,8 +27,7 @@ export default function Assistant() {
     }
   }
 
-  if (info.error) return <Shell><ErrorText>{info.error}</ErrorText></Shell>
-  if (!info.data) return null
+  if (!info.data) return <Shell><PageLoader error={info.error} retry={info.reload} /></Shell>
 
   const points = [
     [IdCard, `Keep your ${info.data.identifier_label} ready`, 'The assistant asks for it before discussing your case.'],

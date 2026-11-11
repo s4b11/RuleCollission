@@ -1,7 +1,7 @@
 import { FileText, Search, Sparkles, Trash2, Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Card, Empty, ErrorText, Field, Input, PageTitle, Table } from '../components/ui'
+import { Button, Card, Empty, ErrorText, Field, Input, PageLoader, PageTitle, Table } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import { shortDate } from '../lib/labels'
 import { useProfile } from './useProfile'
@@ -47,6 +47,7 @@ export default function Knowledge() {
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="min-w-0 space-y-6 lg:col-span-2">
           <Card title="Documents" icon={FileText} flush>
+            {!documents.data && <PageLoader error={documents.error} retry={documents.reload} />}
             {documents.data?.length === 0 && <Empty icon={FileText}>No documents uploaded.</Empty>}
             <Table head={['Title', 'Passages', 'Added', '']}>
               {(documents.data ?? []).map((d) => (

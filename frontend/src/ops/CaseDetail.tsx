@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import CaseGraph from '../components/CaseGraph'
 import CaseSummary from '../components/CaseSummary'
-import { Avatar, Button, Card, Empty, Input, Select, Tabs } from '../components/ui'
+import { Avatar, Button, Card, Empty, Input, PageLoader, Select, Tabs } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import { describeNeeds, shortDate } from '../lib/labels'
 import ReviewCard, { type Review } from './ReviewCard'
@@ -17,7 +17,9 @@ export default function CaseDetail() {
   const [document, setDocument] = useState('')
   const [note, setNote] = useState('')
   const subject = useLoad(detail.data ? `/ops/subjects/${detail.data.subject_id}` : null, 8)
-  if (!detail.data || !catalogue.data || !subject.data) return null
+  if (!detail.data || !catalogue.data || !subject.data) {
+    return <PageLoader error={detail.error || catalogue.error || subject.error} retry={() => Promise.all([detail.reload(), catalogue.reload(), subject.reload()])} />
+  }
 
   const { summary, graph, reported, decisions, notes, sessions } = detail.data
   const reviews: Review[] = detail.data.reviews.filter((r: Review) => r.status !== 'closed')
@@ -87,10 +89,8 @@ export default function CaseDetail() {
                       {name(d.document)}
                       {d.expires_on && <span className="block text-xs text-muted">expires {d.expires_on}</span>}
                     </span>
-                    <button onClick={() => remove(d.id)} aria-label={`Remove ${name(d.document)}`} title="Remove"
-                      className="text-slate-300 group-hover:text-muted hover:!text-red-600">
-                      <Trash2 size={15} />
-                    </button>
+                    <Button variant="ghost" size="sm" icon={Trash2} onClick={() => remove(d.id)}
+                      aria-label={`Remove ${name(d.document)}`} title="Remove" className="!h-7 !px-1.5 hover:!text-red-600" />
                   </li>
                 ))}
               </ul>

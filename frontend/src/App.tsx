@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout, { type Staff } from './components/Layout'
+import { PageLoader } from './components/ui'
 import { getToken, useLoad } from './lib/api'
 import Login from './Login'
 import CaseDetail from './ops/CaseDetail'
@@ -17,9 +18,9 @@ import Rules from './studio/Rules'
 import Tools from './studio/Tools'
 
 function StaffArea() {
-  const { data: staff, error } = useLoad<Staff>(getToken() ? '/auth/me' : null)
-  if (!getToken() || error) return <Navigate to="/login" />
-  if (!staff) return null
+  const { data: staff, error, reload } = useLoad<Staff>(getToken() ? '/auth/me' : null)
+  if (!getToken()) return <Navigate to="/login" />
+  if (!staff) return <div className="min-h-screen"><PageLoader error={error} retry={reload} /></div>
   return <Layout staff={staff} />
 }
 

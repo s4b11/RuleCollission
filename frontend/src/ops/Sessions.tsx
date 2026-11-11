@@ -1,6 +1,6 @@
 import { Globe, MessagesSquare, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Badge, Card, Empty, PageTitle } from '../components/ui'
+import { Badge, Card, Empty, PageLoader, PageTitle } from '../components/ui'
 import { useLoad } from '../lib/api'
 import { shortDate } from '../lib/labels'
 import Transcript from './Transcript'
@@ -12,7 +12,8 @@ export default function Sessions() {
     <>
       <PageTitle title="Conversations" subtitle="Transcripts of web and phone sessions. Audio is never recorded." />
       <div className="space-y-4">
-        {list.length === 0 && <Card><Empty icon={MessagesSquare}>No conversations yet. They appear here as soon as someone talks to the assistant.</Empty></Card>}
+        {!sessions.data && <PageLoader error={sessions.error} retry={sessions.reload} />}
+        {sessions.data && list.length === 0 && <Card><Empty icon={MessagesSquare}>No conversations yet. They appear here as soon as someone talks to the assistant.</Empty></Card>}
         {list.map((s) => (
           <Card key={s.id} title={s.subject || 'Not identified'} icon={s.channel === 'phone' ? Phone : Globe}
             action={

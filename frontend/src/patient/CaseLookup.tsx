@@ -10,15 +10,18 @@ export default function CaseLookup() {
   const [identifier, setIdentifier] = useState('')
   const [view, setView] = useState<any>(null)
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
   async function submit(event: FormEvent) {
     event.preventDefault()
+    setBusy(true)
     try {
       setView(await api('/public/cases/lookup', { body: { code, identifier } }))
       setError('')
     } catch (e) {
       setError((e as Error).message)
     }
+    setBusy(false)
   }
 
   return (
@@ -28,7 +31,7 @@ export default function CaseLookup() {
       <form onSubmit={submit} className="mb-6 grid gap-3 rounded-xl border border-line bg-white p-5 shadow-card sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <Field label="Case code"><Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="For example 227E3C" /></Field>
         <Field label="Reference number"><Input value={identifier} onChange={(e) => setIdentifier(e.target.value)} /></Field>
-        <Button type="submit" icon={Search} disabled={!code || !identifier}>Show</Button>
+        <Button type="submit" icon={Search} loading={busy} disabled={!code || !identifier}>{busy ? 'Searching…' : 'Show'}</Button>
       </form>
       <ErrorText>{error}</ErrorText>
       {view && <CaseView view={view} />}

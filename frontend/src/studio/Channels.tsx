@@ -1,6 +1,6 @@
 import { Link2, Phone, Plus, Printer, QrCode } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Button, Card, Field, Input, PageTitle } from '../components/ui'
+import { Button, Card, Field, Input, PageLoader, PageTitle } from '../components/ui'
 import { api, API_URL, useLoad } from '../lib/api'
 import { useProfile } from './useProfile'
 
@@ -11,7 +11,7 @@ export default function Channels() {
   const [phone, setPhone] = useState('')
 
   useEffect(() => { if (profile) setPhone(profile.phone_number) }, [profile])
-  if (!profile) return null
+  if (!profile) return <PageLoader />
 
   async function addLocation() {
     await api(`/studio/profiles/${profile!.id}/locations`, { body: { label } })
