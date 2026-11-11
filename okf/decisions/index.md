@@ -18,3 +18,4 @@
 * [0016 Deploy with a manual GitHub Actions workflow](0016-deploy-with-github-actions.md) - Modal, LiveKit Cloud and Cloudflare Pages from one workflow; keys as GitHub secrets
 * [0017 Polished dashboard design](0017-polished-dashboard-design.md) - Icons, bundled font, soft shadows, dark sidebar; still no neon or gradients
 * [0018 Backend scales to zero on Modal](0018-modal-scale-to-zero.md) - No always-on container; stops after 1.5 idle minutes; normal spinners while it starts
+* [0019 Seed adds missing demo data on every start](0019-seed-adds-missing-demo-data.md) - Idempotent demo seed; history only for new people; fixed case codes
