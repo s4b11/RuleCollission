@@ -22,15 +22,19 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
   async function submit(event: FormEvent) {
     event.preventDefault()
+    setBusy(true)
+    setError('')
     try {
       const result = await api('/auth/login', { body: { email, password } })
       setToken(result.token)
       window.location.href = '/ops'
     } catch (e) {
       setError((e as Error).message)
+      setBusy(false)
     }
   }
 
@@ -68,7 +72,7 @@ export default function Login() {
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </Field>
             <ErrorText>{error}</ErrorText>
-            <Button type="submit" className="w-full">Sign in</Button>
+            <Button type="submit" className="w-full" loading={busy}>{busy ? 'Signing in…' : 'Sign in'}</Button>
           </form>
 
           <div className="mt-8 rounded-xl border border-line bg-white shadow-card">

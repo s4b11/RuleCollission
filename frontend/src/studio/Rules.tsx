@@ -1,6 +1,6 @@
 import { Check, FileCode2, History, ListChecks, MessageSquareText, Pencil, Send, Shuffle, X } from 'lucide-react'
 import { useState } from 'react'
-import { Badge, Button, Card, Empty, ErrorText, Input, PageTitle, StatusBadge, Table, TextArea } from '../components/ui'
+import { Badge, Button, Card, Empty, ErrorText, Input, PageLoader, PageTitle, Spinner, StatusBadge, Table, TextArea } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import { describeNeeds, shortDate } from '../lib/labels'
 import { useProfile } from './useProfile'
@@ -60,11 +60,14 @@ function RuleChat({ packId, onDraft }: { packId: string; onDraft: () => void }) 
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([])
   const [text, setText] = useState('')
   const [error, setError] = useState('')
+  const [thinking, setThinking] = useState(false)
 
   async function send() {
     const next = [...messages, { role: 'user', content: text }]
     setMessages(next)
     setText('')
+    setError('')
+    setThinking(true)
     try {
       const answer = await api(`/studio/rulepacks/${packId}/drafts/chat`, { body: { messages: next } })
       setMessages([...next, { role: 'assistant', content: answer.reply }])
@@ -72,6 +75,7 @@ function RuleChat({ packId, onDraft }: { packId: string; onDraft: () => void }) 
     } catch (e) {
       setError((e as Error).message)
     }
+    setThinking(false)
   }
 
   return (
@@ -81,10 +85,15 @@ function RuleChat({ packId, onDraft }: { packId: string; onDraft: () => void }) 
         {messages.map((m, index) => (
           <p key={index} className={`max-w-[90%] rounded-2xl px-3.5 py-2 text-sm ${m.role === 'user' ? 'ml-auto rounded-tr-sm bg-brand text-white' : 'rounded-tl-sm bg-slate-100 text-ink'}`}>{m.content}</p>
         ))}
+        {thinking && (
+          <p className="flex w-fit items-center gap-2 rounded-2xl rounded-tl-sm bg-slate-100 px-3.5 py-2 text-sm text-muted">
+            <Spinner size="sm" /> Drafting…
+          </p>
+        )}
       </div>
       <div className="flex gap-2">
         <Input placeholder="For example: Pharmacy gives clearance only after the final bill"
-          value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && text && send()} />
+          value={text} disabled={thinking} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && text && !thinking && send()} />
         <Button icon={Send} disabled={!text} onClick={send} aria-label="Send" />
       </div>
       <div className="mt-2"><ErrorText>{error}</ErrorText></div>
@@ -99,7 +108,7 @@ export default function Rules() {
   const drafts = useLoad<any[]>(packId ? `/studio/rulepacks/${packId}/drafts` : null)
   const [yamlText, setYamlText] = useState<string | null>(null)
   const [error, setError] = useState('')
-  if (!pack.data || !drafts.data || !packId) return null
+  if (!pack.data || !drafts.data || !packId) return <PageLoader error={pack.error || drafts.error} retry={() => Promise.all([pack.reload(), drafts.reload()])} />
 
   const { data } = pack.data
   const officeName = (id: string) => data.offices.find((o: any) => o.id === id)?.name ?? id

@@ -1,6 +1,6 @@
 import { CircleCheckBig } from 'lucide-react'
 import { useState } from 'react'
-import { Card, Empty, PageTitle, Switch, Tabs } from '../components/ui'
+import { Card, Empty, PageLoader, PageTitle, Switch, Tabs } from '../components/ui'
 import { useLoad } from '../lib/api'
 import ReviewCard, { type Review } from './ReviewCard'
 
@@ -28,7 +28,8 @@ export default function Reviews() {
       ]} />
       <div className="space-y-3">
         {shown.map((r) => <ReviewCard key={r.id} review={r} showCase onDone={reviews.reload} />)}
-        {shown.length === 0 && (
+        {!reviews.data && <PageLoader error={reviews.error} retry={reviews.reload} />}
+        {reviews.data && shown.length === 0 && (
           <Card><Empty icon={CircleCheckBig}>{tab === 'open' ? 'No open questions. You are all caught up.' : 'Nothing answered yet.'}</Empty></Card>
         )}
       </div>

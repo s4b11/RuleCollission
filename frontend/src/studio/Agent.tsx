@@ -1,6 +1,6 @@
 import { Eye, Fingerprint, Save, Sparkles, Volume2, Wrench } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Button, Card, ErrorText, Field, Input, PageTitle, Select, Switch, TextArea } from '../components/ui'
+import { Button, Card, ErrorText, Field, Input, PageLoader, PageTitle, Select, Switch, TextArea } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import { useProfile, type Profile } from './useProfile'
 
@@ -15,7 +15,7 @@ export default function Agent() {
   const preview = useLoad(profile ? `/studio/profiles/${profile.id}/preview?channel=${channel}&v=${saved}` : null)
 
   useEffect(() => { if (profile) setForm(profile) }, [profile])
-  if (!form || !tools.data || !catalogue.data) return null
+  if (!form || !tools.data || !catalogue.data) return <PageLoader error={tools.error || catalogue.error} retry={() => Promise.all([tools.reload(), catalogue.reload()])} />
 
   const set = (field: keyof Profile, value: any) => setForm({ ...form, [field]: value })
   const documents = catalogue.data.find((p) => p.pack_id === form.pack_id)?.documents ?? []

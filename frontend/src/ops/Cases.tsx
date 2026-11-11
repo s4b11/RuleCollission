@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useOutletContext } from 'react-router-dom'
 import type { Staff } from '../components/Layout'
-import { Avatar, Badge, Card, Empty, PageTitle, StatusBadge, Table, Tabs } from '../components/ui'
+import { Avatar, Badge, Card, Empty, PageLoader, PageTitle, StatusBadge, Table, Tabs } from '../components/ui'
 import { useLoad } from '../lib/api'
 import { shortDate } from '../lib/labels'
 
@@ -25,7 +25,9 @@ export default function Cases() {
         { id: 'moving', label: 'Route found', count: moving.length },
       ]} />
       <Card flush>
-        {shown.length === 0 && <Empty>No cases here.</Empty>}
+        {cases.loading && <PageLoader />}
+        {cases.error && !cases.data && <PageLoader error={cases.error} retry={cases.reload} />}
+        {cases.data && shown.length === 0 && <Empty>No cases here.</Empty>}
         {shown.length > 0 && (
           <Table head={[staff.subject_label, 'Identifier', 'Case code', 'Status', 'Open questions', 'Updated']}>
             {shown.map((c) => (

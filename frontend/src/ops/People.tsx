@@ -2,7 +2,7 @@ import { BedDouble, Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import type { Staff } from '../components/Layout'
-import { Avatar, Button, Card, Input, PageTitle, Select, StatusBadge, Table } from '../components/ui'
+import { Avatar, Button, Card, Input, PageLoader, PageTitle, Select, StatusBadge, Table } from '../components/ui'
 import { api, useLoad } from '../lib/api'
 import { STATUS } from '../lib/labels'
 
@@ -55,7 +55,7 @@ export default function People() {
   const [opening, setOpening] = useState('')
   const [goal, setGoal] = useState('')
   const [query, setQuery] = useState('')
-  if (!people.data || !catalogue.data) return null
+  if (!people.data || !catalogue.data) return <PageLoader error={people.error || catalogue.error} retry={() => Promise.all([people.reload(), catalogue.reload()])} />
   const pack = catalogue.data[0]
   const hasWards = people.data.some((p) => p.details.ward)
   const shown = people.data.filter((p) => `${p.name} ${p.identifier}`.toLowerCase().includes(query.toLowerCase()))

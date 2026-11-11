@@ -1,7 +1,7 @@
 import { CircleCheckBig, FolderClock, Inbox, Users } from 'lucide-react'
 import { Link, useOutletContext } from 'react-router-dom'
 import type { Staff } from '../components/Layout'
-import { Avatar, Card, Empty, PageTitle, StatTile, StatusBadge, Table } from '../components/ui'
+import { Avatar, Card, Empty, PageLoader, PageTitle, StatTile, StatusBadge, Table } from '../components/ui'
 import { useLoad } from '../lib/api'
 import { shortDate } from '../lib/labels'
 import ReviewCard, { type Review } from './ReviewCard'
@@ -11,7 +11,7 @@ export default function Overview() {
   const overview = useLoad('/ops/overview', 10)
   const reviews = useLoad<Review[]>('/ops/reviews', 10)
   const cases = useLoad<any[]>('/ops/cases', 10)
-  if (!overview.data) return null
+  if (!overview.data) return <PageLoader error={overview.error} retry={overview.reload} />
   const byStatus = overview.data.cases_by_status
   const waiting = (byStatus.needs_decision ?? 0) + (byStatus.needs_information ?? 0) + (byStatus.unresolved ?? 0)
   const open = (reviews.data ?? []).filter((r) => r.status === 'open')
@@ -34,7 +34,8 @@ export default function Overview() {
           </div>
           <div className="space-y-3">
             {open.slice(0, 3).map((review) => <ReviewCard key={review.id} review={review} showCase onDone={reload} />)}
-            {open.length === 0 && <Card><Empty>Nothing is waiting for your office.</Empty></Card>}
+            {!reviews.data && <Card><PageLoader /></Card>}
+            {reviews.data && open.length === 0 && <Card><Empty>Nothing is waiting for your office.</Empty></Card>}
           </div>
         </div>
         <Card title="Recent cases" flush
